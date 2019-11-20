@@ -1,54 +1,13 @@
 
 
 
+
+#include <iostream>
+#include <vector>
+
 #include "gl3w/GL/gl3w.h"
 #include "glfw/glfw3.h"
-#include <iostream>
-
-GLuint compileShaders()
-{
-	const GLchar* vertex_shader_source = "\n"
-		"#version 450 core \n"
-		" \n"
-		"const vec4 vertices[3] = vec4[3](vec4(0.25, -0.25, 0.5, 1.0), \n"
-		"									vec4(-0.25, -0.25, 0.5, 1.0), \n"
-		"									vec4(0.25, 0.25, 0.5, 1.0)); \n"
-		" \n"
-		"void main(void)\n"
-		"{\n"
-		"	gl_Position = vertices[gl_VertexID]; \n"
-		"}\n";
-
-	const GLchar* fragment_shader_source = "\n"
-		"#version 450 core\n"
-		"out vec4 color; \n"
-		"void main(void)\n"
-		"{\n"
-		"color = vec4(0.0, 0.8, 1.0, 1.0); \n"
-		"}\n";
-
-	GLuint vertex_shader;
-	GLuint fragment_shader;
-	GLuint program;
-
-	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_shader_source, nullptr);
-	glCompileShader(vertex_shader);
-
-	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_shader_source, nullptr);
-	glCompileShader(fragment_shader);
-
-	program = glCreateProgram();
-	glAttachShader(program, vertex_shader);
-	glAttachShader(program, fragment_shader);
-	glLinkProgram(program);
-
-	glDeleteShader(vertex_shader);
-	glDeleteShader(fragment_shader);
-
-	return program;
-}
+#include "shader_helpers/shader_set_up.h"
 
 int main()
 {
@@ -63,7 +22,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	
-	GLFWwindow* window = glfwCreateWindow(800, 600, "aaa", 0 ? glfwGetPrimaryMonitor() : NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(800, 600, "test", 0, nullptr);
 	if(!window)
 	{
 		fprintf(stderr, "Failed to open window\n");
@@ -77,11 +36,14 @@ int main()
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	}
 
-	// info.flags.stereo = (glfwGetWindowParam(GLFW_STEREO) ? 1 : 0);
-
 	gl3wInit();
 
-	GLuint program = compileShaders();
+	GLuint vertexShader = shader::set_up::loadFromFile("assets/shaders/shader.vert", GL_VERTEX_SHADER);
+	GLuint fragmentShader = shader::set_up::loadFromFile("assets/shaders/shader.frag", GL_FRAGMENT_SHADER);
+
+	std::vector<GLuint> shaders = {vertexShader, fragmentShader};
+	GLuint program = shader::set_up::linkFromShaders(shaders, true);
+
 	GLuint vao;
 	glCreateVertexArrays(1, &vao);
 	glBindVertexArray(vao);

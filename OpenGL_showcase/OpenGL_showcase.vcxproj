@@ -21,6 +21,14 @@
   <ItemGroup>
     <ClCompile Include="src\gl3w.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\shader_helpers\shader_set_up.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\shader_helpers\shader_set_up.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\shader.frag" />
+    <None Include="assets\shaders\shader.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
