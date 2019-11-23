@@ -27,8 +27,11 @@
     <ClInclude Include="src\shader_helpers\shader_set_up.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\shader.frag" />
-    <None Include="assets\shaders\shader.vert" />
+    <None Include="assets\shaders\fragment.glsl" />
+    <None Include="assets\shaders\geometry.glsl" />
+    <None Include="assets\shaders\tessellationControl.glsl" />
+    <None Include="assets\shaders\tessellationEvaluation.glsl" />
+    <None Include="assets\shaders\vertex.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

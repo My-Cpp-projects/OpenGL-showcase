@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+#include <math.h>
 
 #include "gl3w/GL/gl3w.h"
 #include "glfw/glfw3.h"
@@ -31,18 +32,16 @@ int main()
 
 	glfwMakeContextCurrent(window);
 
-	if(true)
-	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-	}
-
 	gl3wInit();
 
-	GLuint vertexShader = shader::set_up::loadFromFile("assets/shaders/shader.vert", GL_VERTEX_SHADER);
-	GLuint fragmentShader = shader::set_up::loadFromFile("assets/shaders/shader.frag", GL_FRAGMENT_SHADER);
+	GLuint vertexShader = shader::set_up::loadFromFile("assets/shaders/vertex.glsl", GL_VERTEX_SHADER);
+	GLuint tessellationControlShader = shader::set_up::loadFromFile("assets/shaders/tessellationControl.glsl", GL_TESS_CONTROL_SHADER);
+	GLuint tessellationEvaluationShader = shader::set_up::loadFromFile("assets/shaders/tessellationEvaluation.glsl", GL_TESS_EVALUATION_SHADER);
+	GLuint geometryShader = shader::set_up::loadFromFile("assets/shaders/geometry.glsl", GL_GEOMETRY_SHADER);
+	GLuint fragmentShader = shader::set_up::loadFromFile("assets/shaders/fragment.glsl", GL_FRAGMENT_SHADER);
 
-	std::vector<GLuint> shaders = {vertexShader, fragmentShader};
-	GLuint program = shader::set_up::linkFromShaders(shaders, true);
+	std::vector<GLuint> shaders = { vertexShader, tessellationControlShader, tessellationEvaluationShader, geometryShader, fragmentShader };
+	GLuint program = shader::set_up::linkProgramFromShaders(shaders, true);
 
 	GLuint vao;
 	glCreateVertexArrays(1, &vao);
@@ -50,20 +49,31 @@ int main()
 
 	bool running = true;
 
-	do
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	GLfloat backgroundColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	while(running)
 	{
-		GLfloat color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		glClearBufferfv(GL_COLOR, 0, color);
+		glClearBufferfv(GL_COLOR, 0, backgroundColor);
 		
 		glUseProgram(program);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		double currentTime = glfwGetTime();
+		GLfloat offset[] = {
+			(float)sin(currentTime) * 0.5f,
+			(float)cos(currentTime) * 0.6f,
+			0.0f,
+			0.0f};
+		glVertexAttrib4fv(0, offset);
+
+		glPointSize(5.0f);
+		glDrawArrays(GL_PATCHES, 0, 3);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
 		running &= (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_RELEASE);
 		running &= (glfwWindowShouldClose(window) != GL_TRUE);
-	} while(running);
+	}
 
 	glDeleteVertexArrays(1, &vao);
 	glDeleteProgram(program);

@@ -14,7 +14,7 @@ namespace shader
 	{
 		GLuint loadFromFile(const std::string& filePath, const GLenum& shaderType);
 		GLuint loadFromString(const std::string& sourceCode, const GLenum& shaderType);
-		GLuint linkFromShaders(std::vector<GLuint>& shaders, bool delete_shaders);
+		GLuint linkProgramFromShaders(std::vector<GLuint>& shaders, bool delete_shaders);
 	}
 }
 

@@ -63,11 +63,11 @@ namespace shader
 			return result;
 		}
 
-		GLuint linkFromShaders(std::vector<GLuint>& shaders, bool delete_shaders)
+		GLuint linkProgramFromShaders(std::vector<GLuint>& shaders, bool delete_shaders)
 		{
 			GLuint program = glCreateProgram();
 
-			for(auto shader : shaders)
+			for(auto& shader : shaders)
 			{
 				glAttachShader(program, shader);
 			}
@@ -83,13 +83,13 @@ namespace shader
 				char buffer[logSize];
 				glGetProgramInfoLog(program, logSize, nullptr, buffer);
 				glDeleteProgram(program);
-				printf("Didn't manage to compile shaders into program");
+				printf("Didn't manage to compile shaders into program. Reason:\n%s", buffer);
 				return 0;
 			}
 
 			if(delete_shaders)
 			{
-				for(auto shader : shaders)
+				for(auto& shader : shaders)
 				{
 					glDeleteShader(shader);
 				}
