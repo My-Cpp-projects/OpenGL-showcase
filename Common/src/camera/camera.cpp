@@ -1,6 +1,6 @@
 
 
-#include "camera.h"
+#include "camera/camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
@@ -12,9 +12,9 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 	, Yaw(yaw)
 	, Pitch(pitch)
 	, Front(glm::vec3(0.0f, 0.0f, -1.0f))
-	, MovementSpeed(SPEED)
-	, MouseSensitivity(SENSITIVITY)
-	, Zoom(ZOOM)
+	, MovementSpeed(2.5f)
+	, MouseSensitivity(0.1f)
+	, Zoom(45.0f)
 {
 	updateCameraVectors();
 }
@@ -26,9 +26,9 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
 	, Yaw(yaw)
 	, Pitch(pitch)
 	, Front(glm::vec3(0.0f, 0.0f, -1.0f))
-	, MovementSpeed(SPEED)
-	, MouseSensitivity(SENSITIVITY)
-	, Zoom(ZOOM)
+	, MovementSpeed(2.5f)
+	, MouseSensitivity(0.1f)
+	, Zoom(45.0f)
 {
 	updateCameraVectors();
 }
@@ -43,13 +43,13 @@ glm::mat4 Camera::GetViewMatrix()
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
 {
 	float velocity = MovementSpeed * deltaTime;
-	if (direction == FORWARD)
+	if (direction == Camera_Movement::FORWARD)
 		Position += Front * velocity;
-	if (direction == BACKWARD)
+	if (direction == Camera_Movement::BACKWARD)
 		Position -= Front * velocity;
-	if (direction == LEFT)
+	if (direction == Camera_Movement::LEFT)
 		Position -= Right * velocity;
-	if (direction == RIGHT)
+	if (direction == Camera_Movement::RIGHT)
 		Position += Right * velocity;
 }
 

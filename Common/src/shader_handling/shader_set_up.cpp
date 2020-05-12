@@ -6,7 +6,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "shader_set_up.h"
+#include "shader_handling/shader_set_up.h"
+#include "glfw/glfw3.h"
+
 
 std::string shaderTypeToString(GLenum shaderType);
 std::string extractFileContent(const std::string& filePath);
@@ -15,31 +17,9 @@ namespace shader
 {
 	namespace set_up
 	{
-		GLuint loadFromFile(const std::string& filePath, const GLenum& shaderType)
-		{
-			GLuint result = 0;
-
-			std::string fileContent = extractFileContent(filePath);
-			if(fileContent.empty())
-			{
-				printf("Shader file content is empty. filePath: %s\n", filePath.c_str());
-				return result;
-			}
-
-			result = loadFromString(fileContent, shaderType);
-
-			if(0 == result)
-			{
-				printf("Failed to compile shader: %s\n", filePath.c_str());
-			}
-
-			return result;
-		}
-
 		GLuint loadFromString(const std::string& sourceCode, const GLenum& shaderType)
 		{
 			GLuint result = glCreateShader(shaderType);
-
 			const GLchar* const s = sourceCode.c_str();
 			glShaderSource(result, 1, &s, nullptr);
 
@@ -58,6 +38,27 @@ namespace shader
 					   buffer);
 				glDeleteShader(result);
 				return 0;
+			}
+
+			return result;
+		}
+
+		GLuint loadFromFile(const std::string& filePath, const GLenum& shaderType)
+		{
+			GLuint result = 0;
+
+			std::string fileContent = extractFileContent(filePath);
+			if(fileContent.empty())
+			{
+				printf("Shader file content is empty. filePath: %s\n", filePath.c_str());
+				return result;
+			}
+
+			result = loadFromString(fileContent, shaderType);
+
+			if(0 == result)
+			{
+				printf("Failed to compile shader: %s\n", filePath.c_str());
 			}
 
 			return result;

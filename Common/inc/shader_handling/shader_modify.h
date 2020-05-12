@@ -29,7 +29,6 @@ namespace shader
 		void setMat2(GLuint programId, const std::string& name, const glm::mat2& mat);
 		void setMat3(GLuint programId, const std::string& name, const glm::mat3& mat);
 		void setMat4(GLuint programId, const std::string& name, const glm::mat4& mat);
-		
 	}
 }
 
