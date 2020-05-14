@@ -18,6 +18,7 @@ class Window
 	Window& operator=(Window&&) = delete;
 
 public:
+	~Window();
 	static GLFWwindow* getWindow(int width, int height, std::string title);
 
 private:

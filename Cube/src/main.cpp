@@ -8,6 +8,7 @@
 #include "shader_handling/shader_modify.h"
 #include "camera/camera.h"
 #include "window/window.h"
+#include "image_loading/stb_image.h"
 
 #include "gl3w/GL/gl3w.h"
 #include "glfw/glfw3.h"
@@ -26,8 +27,8 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 int main()
 {
-	constexpr unsigned int SCR_WIDTH = 1920;
-	constexpr unsigned int SCR_HEIGHT = 1080;
+	constexpr unsigned int SCR_WIDTH = 800;
+	constexpr unsigned int SCR_HEIGHT = 600;
 
 	auto window = Window::getWindow(SCR_WIDTH, SCR_HEIGHT, "Showcase: Cube");
 	if(not window)
@@ -42,75 +43,164 @@ int main()
 	glfwSetScrollCallback(window, scroll_callback);
 
 	// Setup shaders
-	GLuint vertexShader = shader::set_up::loadFromFile("src/shaders/cube.vert", GL_VERTEX_SHADER);
-	GLuint fragmentShader = shader::set_up::loadFromFile("src/shaders/cube.frag", GL_FRAGMENT_SHADER);
+	auto vertexShader = shader::set_up::loadFromFile("src/shaders/cube.vert", GL_VERTEX_SHADER);
+	auto fragmentShader = shader::set_up::loadFromFile("src/shaders/cube.frag", GL_FRAGMENT_SHADER);
 	std::vector<GLuint> shaders = { vertexShader, fragmentShader };
-	GLuint program = shader::set_up::linkProgramFromShaders(shaders, true);
+	auto program = shader::set_up::linkProgramFromShaders(shaders, true);
 
 	// Vertices for cube
 	static const std::vector<GLfloat> cube_vertices =
 	{
-		-0.25f, -0.25f, -0.25f,
-		-0.25f,  0.25f, -0.25f,
-		 0.25f, -0.25f, -0.25f,
-		 0.25f,  0.25f, -0.25f,
-		 0.25f, -0.25f,  0.25f,
-		 0.25f,  0.25f,  0.25f,
-		-0.25f, -0.25f,  0.25f,
-		-0.25f,  0.25f,  0.25f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
 	};
 
-	static const std::vector<GLushort> cube_indices =
+	static const std::vector<GLfloat> texture_coordinates =
 	{
-		0, 1, 2,
-		2, 1, 3,
-		2, 3, 4,
-		4, 3, 5,
-		4, 5, 6,
-		6, 5, 7,
-		6, 7, 0,
-		0, 7, 1,
-		6, 0, 2,
-		2, 4, 6,
-		7, 5, 3,
-		7, 3, 1
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
+
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
+
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 0.0f,
+		0.0f, 1.0f,
+
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 0.0f,
+		0.0f, 1.0f
 	};
 
-	// Create VAO
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	// Create buffer for vertices
-	GLuint vertex_buffer;
-	glGenBuffers(1, &vertex_buffer);
-	// Bind buffer to target
-	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-	// Allocate memory for the buffer and pass the data to it
+	enum bufferPositions
+	{
+		VERTEX = 0,
+		INDICES = 1,
+		TEXTURE = 2
+	};
+
+	std::vector<GLuint> buffers(3);
+	glGenBuffers(buffers.size(), &buffers.front());
+
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[bufferPositions::VERTEX]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * cube_vertices.size(), &cube_vertices.front(), GL_STATIC_DRAW);
-	// Specify the way we arrange data in the vertex buffer
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 	glEnableVertexAttribArray(0);
 
-	// Create buffer for indices
-	GLuint index_buffer;
-	glGenBuffers(1, &index_buffer);
-	// Bind buffer to target
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-	// Fill buffer
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * cube_indices.size(), &cube_indices.front(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[bufferPositions::TEXTURE]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * texture_coordinates.size(), &texture_coordinates.front(), GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glEnableVertexAttribArray(1);
 
-	glEnable(GL_CULL_FACE);
+	// Texturing
+	// step 1 set up openGl buffer
+	GLuint texture;
+	glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// step 2 get image into texture
+	int width;
+	int height;
+	int nrChannels;
+	stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+	auto* data = stbi_load("../_Assets/textures/wooden_plank.jpg", &width, &height, &nrChannels, 4);
+	if(data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
-
-	bool running = true;
 
 	// timing
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
 
-	while(running)
+	glUseProgram(program);
+	shader::modify::setInt(program, "texture1", 0);
+
+	while(glfwWindowShouldClose(window) != GL_TRUE)
 	{
 		double currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
@@ -119,31 +209,31 @@ int main()
 		glClearColor(0.0f, 0.25f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glUseProgram(program);
+		glBindVertexArray(vao);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+
 		processInput(window, deltaTime);
 
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glUseProgram(program);
+		auto projection = glm::perspective(glm::radians(camera.m_zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		shader::modify::setMat4(program, "projection_matrix", projection);
 
-		glm::mat4 view = camera.GetViewMatrix();
+		auto view = camera.GetViewMatrix();
 		shader::modify::setMat4(program, "view_matrix", view);
 
-		glm::mat4 model = glm::mat4(1.0f);
+		auto model = glm::mat4(1.0f);
+		model = glm::scale(model, glm::vec3(0.5, 0.5, 0.5));
 		shader::modify::setMat4(program, "model_matrix", model);
 
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
-		running &= (glfwWindowShouldClose(window) != GL_TRUE);
 	}
 
-	glDeleteBuffers(1, &vertex_buffer);
+	glDeleteBuffers(buffers.size(), &buffers.front());
 	glDeleteVertexArrays(1, &vao);
-
-	glfwDestroyWindow(window);
-	glfwTerminate();
 }
 
 void processInput(GLFWwindow* window, float deltaTime)
@@ -168,8 +258,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	static float lastX = 0;
-	static float lastY = 0;
+	static float lastX = 0.0f;
+	static float lastY = 0.0f;
 	static bool firstMouse = true;
 
 	if(firstMouse)

@@ -1,15 +1,18 @@
 
 
-#version 420 core                 
-                                  
-out vec4 color;                   
-                                  
-in VS_OUT                         
-{                                 
-    vec4 color;                   
-} fs_in;                          
-                                  
-void main(void)                   
-{                                 
-    color = fs_in.color;          
-}                                 
+#version 420 core
+
+out vec4 color;
+
+in VS_OUT
+{
+    vec4 color;
+    vec2 TexCoord;
+} fs_in;
+
+uniform sampler2D texture1;
+
+void main(void)
+{
+    color = texture(texture1, fs_in.TexCoord);
+}

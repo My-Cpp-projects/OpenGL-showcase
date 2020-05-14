@@ -21,9 +21,14 @@ enum class Camera_Movement
 class Camera
 {
 public:
-	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.0f, float pitch = 0.0f);
+	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
+		   glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
+		   float yaw = -90.0f,
+		   float pitch = 0.0f);
 
-	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
+	Camera(float posX, float posY, float posZ,
+		   float upX, float upY, float upZ, 
+		   float yaw, float pitch);
 
 	// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	glm::mat4 GetViewMatrix();
@@ -35,18 +40,18 @@ public:
 	void ProcessMouseScroll(float yoffset);
 
 	// Camera Attributes
-	glm::vec3 Position;
-	glm::vec3 Front;
-	glm::vec3 Up;
-	glm::vec3 Right;
-	glm::vec3 WorldUp;
+	glm::vec3 m_position;
+	glm::vec3 m_front;
+	glm::vec3 m_up;
+	glm::vec3 m_right;
+	glm::vec3 m_worldUp;
 	// Euler Angles
-	float Yaw;
-	float Pitch;
+	float m_yaw;
+	float m_pitch;
 	// Camera options
-	float MovementSpeed;
-	float MouseSensitivity;
-	float Zoom;
+	float m_movementSpeed;
+	float m_mouseSensitivity;
+	float m_zoom;
 
 private:
 	// Calculates the front vector from the Camera's (updated) Euler Angles

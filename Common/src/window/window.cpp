@@ -6,6 +6,12 @@
 
 GLFWwindow* Window::m_window = nullptr;
 
+Window::~Window()
+{
+	glfwDestroyWindow(m_window);
+	glfwTerminate();
+}
+
 GLFWwindow* Window::getWindow(int width, int height, std::string title)
 {
 	if(not m_window)

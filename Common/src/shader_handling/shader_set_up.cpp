@@ -19,7 +19,7 @@ namespace shader
 	{
 		GLuint loadFromString(const std::string& sourceCode, const GLenum& shaderType)
 		{
-			GLuint result = glCreateShader(shaderType);
+			auto result = glCreateShader(shaderType);
 			const GLchar* const s = sourceCode.c_str();
 			glShaderSource(result, 1, &s, nullptr);
 
@@ -28,9 +28,9 @@ namespace shader
 			GLint status = 0;
 			glGetShaderiv(result, GL_COMPILE_STATUS, &status);
 
-			if(!status)
+			if(not status)
 			{
-				const short logSize = 4096;
+				constexpr short logSize = 4096;
 				char buffer[logSize];
 				glGetShaderInfoLog(result, logSize, nullptr, buffer);
 				printf("Didn't manage to compile shader of type: %s, error: %s ",
@@ -47,7 +47,7 @@ namespace shader
 		{
 			GLuint result = 0;
 
-			std::string fileContent = extractFileContent(filePath);
+			auto fileContent = extractFileContent(filePath);
 			if(fileContent.empty())
 			{
 				printf("Shader file content is empty. filePath: %s\n", filePath.c_str());
@@ -66,7 +66,7 @@ namespace shader
 
 		GLuint linkProgramFromShaders(std::vector<GLuint>& shaders, bool delete_shaders)
 		{
-			GLuint program = glCreateProgram();
+			auto program = glCreateProgram();
 
 			for(auto& shader : shaders)
 			{
@@ -78,7 +78,7 @@ namespace shader
 			GLint status;
 			glGetProgramiv(program, GL_LINK_STATUS, &status);
 
-			if(!status)
+			if(not status)
 			{
 				const short logSize = 4096;
 				char buffer[logSize];
@@ -147,7 +147,7 @@ std::string extractFileContent(const std::string& filePath)
 	std::stringstream fileStream;
 	fileStream << file.rdbuf();
 	file.close();
-	std::string fileContent = fileStream.str();
+	auto fileContent = fileStream.str();
 
 	return fileContent;
 }

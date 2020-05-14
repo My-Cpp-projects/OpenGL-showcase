@@ -31,6 +31,12 @@
     <Filter Include="Source Files\window">
       <UniqueIdentifier>{fa423b16-cd54-4035-8749-178f629a3697}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\image_loading">
+      <UniqueIdentifier>{eba73a57-5fda-4017-946c-a2973822e927}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\image_loading">
+      <UniqueIdentifier>{af52cbb8-e223-42ad-bfd6-3b84b39d5141}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_External\gl3w.c">
@@ -48,6 +54,9 @@
     <ClCompile Include="src\window\window.cpp">
       <Filter>Source Files\window</Filter>
     </ClCompile>
+    <ClCompile Include="src\image_loading\stb_image.cpp">
+      <Filter>Source Files\image_loading</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\camera\camera.h">
@@ -61,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="inc\window\window.h">
       <Filter>Header Files\window</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\image_loading\stb_image.h">
+      <Filter>Header Files\image_loading</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -156,12 +156,14 @@
   <ItemGroup>
     <ClCompile Include="..\_External\gl3w.c" />
     <ClCompile Include="src\camera\camera.cpp" />
+    <ClCompile Include="src\image_loading\stb_image.cpp" />
     <ClCompile Include="src\shader_handling\shader_modify.cpp" />
     <ClCompile Include="src\shader_handling\shader_set_up.cpp" />
     <ClCompile Include="src\window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\camera\camera.h" />
+    <ClInclude Include="inc\image_loading\stb_image.h" />
     <ClInclude Include="inc\shader_handling\shader_modify.h" />
     <ClInclude Include="inc\shader_handling\shader_set_up.h" />
     <ClInclude Include="inc\window\window.h" />
