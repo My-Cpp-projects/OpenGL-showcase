@@ -7,7 +7,6 @@ layout (location = 1) in vec2 aTexCoord;
 
 out VS_OUT
 {
-    vec4 color;
     vec2 TexCoord;
 } vs_out;
 
@@ -18,6 +17,5 @@ uniform mat4 projection_matrix;
 void main(void)
 {
     gl_Position = projection_matrix * view_matrix * model_matrix * vec4(position, 1.0);
-    vs_out.color = vec4(position, 1.0) * 2.0 + vec4(0.5, 0.5, 0.5, 0.0);
     vs_out.TexCoord = aTexCoord;
 }

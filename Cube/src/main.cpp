@@ -4,18 +4,18 @@
 #include <vector>
 #include <math.h>
 
-#include "shader_handling/shader_set_up.h"
-#include "shader_handling/shader_modify.h"
-#include "camera/camera.h"
-#include "window/window.h"
-#include "image_loading/stb_image.h"
-
 #include "gl3w/GL/gl3w.h"
 #include "glfw/glfw3.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "shader_handling/shader_set_up.h"
+#include "shader_handling/shader_modify.h"
+#include "camera/camera.h"
+#include "window/window.h"
+#include "image_loading/stb_image.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -27,6 +27,7 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 int main()
 {
+	// ----- Setup window
 	constexpr unsigned int SCR_WIDTH = 800;
 	constexpr unsigned int SCR_HEIGHT = 600;
 
@@ -42,13 +43,13 @@ int main()
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	// Setup shaders
+	// ----- Setup shaders
 	auto vertexShader = shader::set_up::loadFromFile("src/shaders/cube.vert", GL_VERTEX_SHADER);
 	auto fragmentShader = shader::set_up::loadFromFile("src/shaders/cube.frag", GL_FRAGMENT_SHADER);
 	std::vector<GLuint> shaders = { vertexShader, fragmentShader };
 	auto program = shader::set_up::linkProgramFromShaders(shaders, true);
 
-	// Vertices for cube
+	// ----- Setup buffers for data
 	static const std::vector<GLfloat> cube_vertices =
 	{
 		-1.0f, -1.0f, -1.0f,
@@ -146,11 +147,10 @@ int main()
 	enum bufferPositions
 	{
 		VERTEX = 0,
-		INDICES = 1,
-		TEXTURE = 2
+		TEXTURE
 	};
 
-	std::vector<GLuint> buffers(3);
+	std::vector<GLuint> buffers(2);
 	glGenBuffers(buffers.size(), &buffers.front());
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[bufferPositions::VERTEX]);
@@ -163,17 +163,19 @@ int main()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 	glEnableVertexAttribArray(1);
 
-	// Texturing
-	// step 1 set up openGl buffer
+	// ----- Setup texturing
+	GLuint sampler_state;
+	glGenSamplers(1, &sampler_state);
+	glSamplerParameteri(sampler_state, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glSamplerParameteri(sampler_state, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glSamplerParameteri(sampler_state, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glSamplerParameteri(sampler_state, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
 	GLuint texture;
+	glActiveTexture(GL_TEXTURE0);
 	glCreateTextures(GL_TEXTURE_2D, 1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	// step 2 get image into texture
 	int width;
 	int height;
 	int nrChannels;
@@ -190,6 +192,10 @@ int main()
 	}
 	stbi_image_free(data);
 
+	glUseProgram(program);
+	shader::modify::setInt(program, "texture1", GL_TEXTURE0);
+
+	// ----- Enabe/disable openGL functions
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
@@ -197,9 +203,7 @@ int main()
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
 
-	glUseProgram(program);
-	shader::modify::setInt(program, "texture1", 0);
-
+	// ----- Main loop
 	while(glfwWindowShouldClose(window) != GL_TRUE)
 	{
 		double currentFrame = glfwGetTime();
@@ -211,9 +215,11 @@ int main()
 
 		glBindVertexArray(vao);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
 
 		processInput(window, deltaTime);
+
+		// Bind the sampler to the texture at GL_TEXTURE0 unit
+		glBindSampler(0, sampler_state);
 
 		glUseProgram(program);
 		auto projection = glm::perspective(glm::radians(camera.m_zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -232,8 +238,11 @@ int main()
 		glfwPollEvents();
 	}
 
+	// ----- Cleanup
 	glDeleteBuffers(buffers.size(), &buffers.front());
 	glDeleteVertexArrays(1, &vao);
+	glDeleteSamplers(1, &sampler_state);
+	glDeleteTextures(1, &texture);
 }
 
 void processInput(GLFWwindow* window, float deltaTime)

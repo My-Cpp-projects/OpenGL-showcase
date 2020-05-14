@@ -6,7 +6,6 @@ out vec4 color;
 
 in VS_OUT
 {
-    vec4 color;
     vec2 TexCoord;
 } fs_in;
 
