@@ -164,6 +164,8 @@ int main()
 	glEnableVertexAttribArray(1);
 
 	// ----- Setup texturing
+	glActiveTexture(GL_TEXTURE0);
+
 	GLuint sampler_state;
 	glGenSamplers(1, &sampler_state);
 	glSamplerParameteri(sampler_state, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -172,7 +174,6 @@ int main()
 	glSamplerParameteri(sampler_state, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	GLuint texture;
-	glActiveTexture(GL_TEXTURE0);
 	glCreateTextures(GL_TEXTURE_2D, 1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -215,11 +216,10 @@ int main()
 
 		glBindVertexArray(vao);
 		glActiveTexture(GL_TEXTURE0);
-
-		processInput(window, deltaTime);
-
 		// Bind the sampler to the texture at GL_TEXTURE0 unit
 		glBindSampler(0, sampler_state);
+
+		processInput(window, deltaTime);
 
 		glUseProgram(program);
 		auto projection = glm::perspective(glm::radians(camera.m_zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
