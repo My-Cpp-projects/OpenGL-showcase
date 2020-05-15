@@ -16,6 +16,7 @@
 #include "camera/camera.h"
 #include "window/window.h"
 #include "image_loading/stb_image.h"
+#include "cube_mesh.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -50,95 +51,8 @@ int main()
 	auto program = shader::set_up::linkProgramFromShaders(shaders, true);
 
 	// ----- Setup buffers for data
-	static const std::vector<GLfloat> cube_vertices =
-	{
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-
-		-1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
-	};
-
-	static const std::vector<GLfloat> texture_coordinates =
-	{
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
-		0.0f, 0.0f,
-
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
-		0.0f, 0.0f,
-
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
-		0.0f, 1.0f,
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-
-		1.0f, 0.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f,
-		0.0f, 1.0f,
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-
-		0.0f, 1.0f,
-		1.0f, 1.0f,
-		1.0f, 0.0f,
-		1.0f, 0.0f,
-		0.0f, 0.0f,
-		0.0f, 1.0f,
-
-		0.0f, 1.0f,
-		1.0f, 1.0f,
-		1.0f, 0.0f,
-		1.0f, 0.0f,
-		0.0f, 0.0f,
-		0.0f, 1.0f
-	};
+	const auto& cube_vertices = CubeMesh::vertices;
+	const auto& cube_texture_coords = CubeMesh::texture_coordinates;
 
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
@@ -159,7 +73,7 @@ int main()
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[bufferPositions::TEXTURE]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * texture_coordinates.size(), &texture_coordinates.front(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * cube_texture_coords.size(), &cube_texture_coords.front(), GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 	glEnableVertexAttribArray(1);
 
