@@ -22,6 +22,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window, float deltaTime);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -29,10 +30,7 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 int main()
 {
 	// ----- Setup window
-	constexpr unsigned int SCR_WIDTH = 800;
-	constexpr unsigned int SCR_HEIGHT = 600;
-
-	auto window = Window::getWindow(SCR_WIDTH, SCR_HEIGHT, "Showcase: Cube");
+	auto window = Window::getWindow(800, 600, "Showcase: Cube");
 	if(not window)
 	{
 		fprintf(stderr, "Failed to get window\n");
@@ -40,6 +38,7 @@ int main()
 	}
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -55,7 +54,7 @@ int main()
 	const auto& cube_texture_coords = CubeMesh::texture_coordinates;
 
 	GLuint vao;
-	glGenVertexArrays(1, &vao);
+	glCreateVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
 	enum bufferPositions
@@ -65,7 +64,7 @@ int main()
 	};
 
 	std::vector<GLuint> buffers(2);
-	glGenBuffers(buffers.size(), &buffers.front());
+	glCreateBuffers(buffers.size(), &buffers.front());
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[bufferPositions::VERTEX]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * cube_vertices.size(), &cube_vertices.front(), GL_STATIC_DRAW);
@@ -81,7 +80,7 @@ int main()
 	glActiveTexture(GL_TEXTURE0);
 
 	GLuint sampler_state;
-	glGenSamplers(1, &sampler_state);
+	glCreateSamplers(1, &sampler_state);
 	glSamplerParameteri(sampler_state, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glSamplerParameteri(sampler_state, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glSamplerParameteri(sampler_state, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -91,14 +90,14 @@ int main()
 	glCreateTextures(GL_TEXTURE_2D, 1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	int width;
-	int height;
-	int nrChannels;
+	int texture_width;
+	int texture_height;
+	int texture_nrChannels;
 	stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-	auto* data = stbi_load("../_Assets/textures/wooden_plank.jpg", &width, &height, &nrChannels, 4);
+	auto* data = stbi_load("../_Assets/textures/wooden_plank.jpg", &texture_width, &texture_height, &texture_nrChannels, 4);
 	if(data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
@@ -136,7 +135,13 @@ int main()
 		processInput(window, deltaTime);
 
 		glUseProgram(program);
-		auto projection = glm::perspective(glm::radians(camera.m_zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		
+		int width;
+		int height;
+		glfwGetWindowSize(window, &width, &height);
+
+		height = (0 != height) ? height : 1;
+		auto projection = glm::perspective(glm::radians(camera.m_zoom), (float)width / height, 0.1f, 100.0f);
 		shader::modify::setMat4(program, "projection_matrix", projection);
 
 		auto view = camera.GetViewMatrix();
@@ -204,4 +209,23 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	static auto cursorMode = GLFW_CURSOR_DISABLED;
+	if(button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+	{
+		switch(cursorMode)
+		{
+			case GLFW_CURSOR_DISABLED:
+				cursorMode = GLFW_CURSOR_NORMAL;
+				break;
+			case GLFW_CURSOR_NORMAL:
+				cursorMode = GLFW_CURSOR_DISABLED;
+				break;
+		}
+
+		glfwSetInputMode(window, GLFW_CURSOR, cursorMode);
+	}
 }
