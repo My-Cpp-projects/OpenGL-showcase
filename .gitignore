@@ -64,6 +64,8 @@ StyleCopReport.xml
 *.ilk
 *.meta
 *.obj
+# Include wavefront .obj-s
+!_Assets/**/*.obj
 *.iobj
 *.pch
 *.pdb
