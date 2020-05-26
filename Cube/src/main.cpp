@@ -1,8 +1,9 @@
 
 
+
+
 #include <iostream>
 #include <vector>
-#include <math.h>
 
 #include "gl3w/GL/gl3w.h"
 #include "glfw/glfw3.h"
@@ -15,8 +16,7 @@
 #include "shader_handling/shader_modify.h"
 #include "camera/camera.h"
 #include "window/window.h"
-#include "image_loading/stb_image.h"
-#include "cube_mesh.h"
+#include "model_handling/model.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -24,7 +24,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window, float deltaTime);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
-// camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 int main()
@@ -33,7 +32,7 @@ int main()
 	auto window = Window::getWindow(800, 600, "Showcase: Cube");
 	if(not window)
 	{
-		fprintf(stderr, "Failed to get window\n");
+		std::cerr << "Failed to get window\n";
 		return -1;
 	}
 
@@ -47,71 +46,20 @@ int main()
 	auto vertexShader = shader::set_up::loadFromFile("src/shaders/cube.vert", GL_VERTEX_SHADER);
 	auto fragmentShader = shader::set_up::loadFromFile("src/shaders/cube.frag", GL_FRAGMENT_SHADER);
 	std::vector<GLuint> shaders = { vertexShader, fragmentShader };
-	auto program = shader::set_up::linkProgramFromShaders(shaders, true);
+	auto cubeProgram = shader::set_up::linkProgramFromShaders(shaders, true);
 
-	// ----- Setup buffers for data
-	const auto& cube_vertices = CubeMesh::vertices;
-	const auto& cube_texture_coords = CubeMesh::texture_coordinates;
-
-	GLuint vao;
-	glCreateVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	enum bufferPositions
-	{
-		VERTEX = 0,
-		TEXTURE
-	};
-
-	std::vector<GLuint> buffers(2);
-	glCreateBuffers(buffers.size(), &buffers.front());
-
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[bufferPositions::VERTEX]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * cube_vertices.size(), &cube_vertices.front(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[bufferPositions::TEXTURE]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * cube_texture_coords.size(), &cube_texture_coords.front(), GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-	glEnableVertexAttribArray(1);
-
-	// ----- Setup texturing
-	glActiveTexture(GL_TEXTURE0);
-
-	GLuint sampler_state;
-	glCreateSamplers(1, &sampler_state);
-	glSamplerParameteri(sampler_state, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glSamplerParameteri(sampler_state, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glSamplerParameteri(sampler_state, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glSamplerParameteri(sampler_state, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-	GLuint texture;
-	glCreateTextures(GL_TEXTURE_2D, 1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	int texture_width;
-	int texture_height;
-	int texture_nrChannels;
-	stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-	auto* data = stbi_load("../_Assets/textures/wooden_plank.jpg", &texture_width, &texture_height, &texture_nrChannels, 4);
-	if(data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
-
-	glUseProgram(program);
-	shader::modify::setInt(program, "texture1", GL_TEXTURE0);
+	auto sun_vertexShader = shader::set_up::loadFromFile("src/shaders/sun.vert", GL_VERTEX_SHADER);
+	auto sun_fragmentShader = shader::set_up::loadFromFile("src/shaders/sun.frag", GL_FRAGMENT_SHADER);
+	std::vector<GLuint> sun_shaders = { sun_vertexShader, sun_fragmentShader };
+	auto sunProgram = shader::set_up::linkProgramFromShaders(sun_shaders, true);
 
 	// ----- Enabe/disable openGL functions
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
+
+	// ---- Load models
+	model_handling::Model cube("../_Assets/models/cube/cube.obj");
+	model_handling::Model sun("../_Assets/models/low_poly_sphere/low_poly_sphere.obj");
 
 	// timing
 	float deltaTime = 0.0f;
@@ -127,41 +75,46 @@ int main()
 		glClearColor(0.0f, 0.25f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glBindVertexArray(vao);
-		glActiveTexture(GL_TEXTURE0);
-		// Bind the sampler to the texture at GL_TEXTURE0 unit
-		glBindSampler(0, sampler_state);
-
 		processInput(window, deltaTime);
 
-		glUseProgram(program);
-		
 		int width;
 		int height;
 		glfwGetWindowSize(window, &width, &height);
 
+		// draw cube
+		glUseProgram(cubeProgram);
 		height = (0 != height) ? height : 1;
-		auto projection = glm::perspective(glm::radians(camera.m_zoom), (float)width / height, 0.1f, 100.0f);
-		shader::modify::setMat4(program, "projection_matrix", projection);
+		auto projectionMat = glm::perspective(glm::radians(camera.m_zoom), (float)width / height, 0.1f, 100.0f);
+		shader::modify::setMat4(cubeProgram, "projection_matrix", projectionMat);
 
-		auto view = camera.GetViewMatrix();
-		shader::modify::setMat4(program, "view_matrix", view);
+		auto viewMat = camera.GetViewMatrix();
+		shader::modify::setMat4(cubeProgram, "view_matrix", viewMat);
 
-		auto model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(0.5, 0.5, 0.5));
-		shader::modify::setMat4(program, "model_matrix", model);
+		auto modelMat = glm::mat4(1.0f);
+		modelMat = glm::translate(modelMat, glm::vec3(0.0f, 0.0f, 0.0f)); 
+		modelMat = glm::scale(modelMat, glm::vec3(1.0f, 1.0f, 1.0f));
+		shader::modify::setMat4(cubeProgram, "model_matrix", modelMat);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		cube.draw(cubeProgram);
+		// -- end draw cube
+
+		// draw sun
+		glUseProgram(sunProgram);
+		modelMat = glm::mat4(1.0f);
+		modelMat = glm::translate(modelMat, glm::vec3(3.0f, 3.0f, -3.0f));
+		modelMat = glm::scale(modelMat, glm::vec3(1.0f, 1.0f, 1.0f));
+		shader::modify::setMat4(sunProgram, "projection_matrix", projectionMat);
+		shader::modify::setMat4(sunProgram, "view_matrix", viewMat);
+		shader::modify::setMat4(sunProgram, "model_matrix", modelMat);
+		sun.draw(sunProgram);
+		// -- end draw sun
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	// ----- Cleanup
-	glDeleteBuffers(buffers.size(), &buffers.front());
-	glDeleteVertexArrays(1, &vao);
-	glDeleteSamplers(1, &sampler_state);
-	glDeleteTextures(1, &texture);
+	glDeleteProgram(cubeProgram);
+	glDeleteProgram(sunProgram);
 }
 
 void processInput(GLFWwindow* window, float deltaTime)
@@ -170,13 +123,13 @@ void processInput(GLFWwindow* window, float deltaTime)
 		glfwSetWindowShouldClose(window, true);
 
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(Camera_Movement::FORWARD, deltaTime);
+		camera.processKeyboard(Camera_Movement::FORWARD, deltaTime);
 	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(Camera_Movement::BACKWARD, deltaTime);
+		camera.processKeyboard(Camera_Movement::BACKWARD, deltaTime);
 	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(Camera_Movement::LEFT, deltaTime);
+		camera.processKeyboard(Camera_Movement::LEFT, deltaTime);
 	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(Camera_Movement::RIGHT, deltaTime);
+		camera.processKeyboard(Camera_Movement::RIGHT, deltaTime);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -203,12 +156,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastX = xpos;
 	lastY = ypos;
 
-	camera.ProcessMouseMovement(xoffset, yoffset);
+	camera.processMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.ProcessMouseScroll(yoffset);
+	camera.processMouseScroll(yoffset);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)

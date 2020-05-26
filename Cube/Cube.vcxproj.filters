@@ -18,9 +18,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\cube_mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\cube.frag">
@@ -29,10 +26,11 @@
     <None Include="src\shaders\cube.vert">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="inc\cube_mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <None Include="src\shaders\sun.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\shaders\sun.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

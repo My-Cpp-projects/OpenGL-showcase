@@ -1,10 +1,12 @@
 
 
+
+
 #version 420 core
-
 layout (location = 0) in vec3 position;
-layout (location = 1) in vec2 aTexCoord;
+layout (location = 2) in vec2 texture_coord;
 
+// flexing on interface blocks :)
 out VS_OUT
 {
     vec2 TexCoord;
@@ -17,5 +19,5 @@ uniform mat4 projection_matrix;
 void main(void)
 {
     gl_Position = projection_matrix * view_matrix * model_matrix * vec4(position, 1.0);
-    vs_out.TexCoord = aTexCoord;
+    vs_out.TexCoord = texture_coord;
 }

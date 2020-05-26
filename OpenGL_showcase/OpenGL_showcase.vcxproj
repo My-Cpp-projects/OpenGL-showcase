@@ -22,17 +22,10 @@
     <ClCompile Include="..\Common\shader_handling\shader_modify.cpp" />
     <ClCompile Include="src\gl3w.c" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\models\triangle\triangle.cpp" />
     <ClCompile Include="src\shader_helpers\shader_set_up.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\shader_handling\shader_modify.h" />
-    <ClInclude Include="src\models\model.h" />
-    <ClInclude Include="src\models\mesh.h" />
-    <ClInclude Include="src\models\mesh_view.h" />
-    <ClInclude Include="src\models\triangle\triangle.h" />
-    <ClInclude Include="src\models\triangle\triangle_data.h" />
-    <ClInclude Include="src\models\triangle\triangle_view.h" />
     <ClInclude Include="src\shader_helpers\shader_set_up.h" />
   </ItemGroup>
   <ItemGroup>

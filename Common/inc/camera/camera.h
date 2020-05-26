@@ -8,7 +8,6 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-// Defines several possible options for camera movement.
 enum class Camera_Movement
 {
 	FORWARD,
@@ -33,11 +32,11 @@ public:
 	// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	glm::mat4 GetViewMatrix();
 
-	void ProcessKeyboard(Camera_Movement direction, float deltaTime);
+	void processKeyboard(Camera_Movement direction, float deltaTime);
 
-	void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
+	void processMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
 
-	void ProcessMouseScroll(float yoffset);
+	void processMouseScroll(float yoffset);
 
 	// Camera Attributes
 	glm::vec3 m_position;
