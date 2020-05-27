@@ -13,50 +13,5 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Resource Files\shaders">
-      <UniqueIdentifier>{16fae501-c9ff-4463-bd73-82f01ef70263}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\shader_helpers">
-      <UniqueIdentifier>{88c984a0-63a3-4a33-b583-8ea3491b39ad}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gl3w.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\shader_helpers\shader_set_up.cpp">
-      <Filter>Source Files\shader_helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\shader_handling\shader_modify.cpp">
-      <Filter>Source Files\shader_helpers</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="assets\shaders\tessellationControl.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="assets\shaders\fragment.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="assets\shaders\vertex.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="assets\shaders\tessellationEvaluation.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="assets\shaders\geometry.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\shader_helpers\shader_set_up.h">
-      <Filter>Source Files\shader_helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\shader_handling\shader_modify.h">
-      <Filter>Source Files\shader_helpers</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
