@@ -62,13 +62,17 @@ int main()
 	model_handling::Model sun("../_Assets/models/low_poly_sphere/low_poly_sphere.obj");
 
 	// timing
-	float deltaTime = 0.0f;
-	float lastFrame = 0.0f;
+	auto deltaTime = 0.0f;
+	auto lastFrame = 0.0f;
+
+	auto sunPosition = glm::vec3(0.0f, 4.0f, 0.0f);
+	auto cubePosition = glm::vec3(0.0f);
+	constexpr auto lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	// ----- Main loop
 	while(glfwWindowShouldClose(window) != GL_TRUE)
 	{
-		double currentFrame = glfwGetTime();
+		auto currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
@@ -81,31 +85,44 @@ int main()
 		int height;
 		glfwGetWindowSize(window, &width, &height);
 
-		// draw cube
-		glUseProgram(cubeProgram);
+		// update light position
+		sunPosition.x = cubePosition.x + sin(glfwGetTime()) * 4.0f;
+		sunPosition.y = cubePosition.y + sin(glfwGetTime() / 2) * cos(glfwGetTime() / 2) * 4.0f;
+		sunPosition.z = cubePosition.z + cos(glfwGetTime()) * 4.0f;
+
 		height = (0 != height) ? height : 1;
 		auto projectionMat = glm::perspective(glm::radians(camera.m_zoom), (float)width / height, 0.1f, 100.0f);
-		shader::modify::setMat4(cubeProgram, "projection_matrix", projectionMat);
-
 		auto viewMat = camera.GetViewMatrix();
-		shader::modify::setMat4(cubeProgram, "view_matrix", viewMat);
-
+		
+		// draw cube
+		glUseProgram(cubeProgram);
 		auto modelMat = glm::mat4(1.0f);
-		modelMat = glm::translate(modelMat, glm::vec3(0.0f, 0.0f, 0.0f)); 
-		modelMat = glm::scale(modelMat, glm::vec3(1.0f, 1.0f, 1.0f));
+		modelMat = glm::translate(modelMat, cubePosition);
+		shader::modify::setMat4(cubeProgram, "projection_matrix", projectionMat);
+		shader::modify::setMat4(cubeProgram, "view_matrix", viewMat);
 		shader::modify::setMat4(cubeProgram, "model_matrix", modelMat);
+		shader::modify::setVec3(cubeProgram, "light_pos", sunPosition);
+		shader::modify::setVec3(cubeProgram, "view_pos", camera.m_position);
 
+		shader::modify::setVec3(cubeProgram, "material.ambient", 1.0f, 0.5f, 0.31f);
+		shader::modify::setVec3(cubeProgram, "material.diffuse", 1.0f, 0.5f, 0.31f);
+		shader::modify::setVec3(cubeProgram, "material.specular", 0.1f, 0.1f, 0.1f);
+		shader::modify::setFloat(cubeProgram, "material.shininess", 32.0f);
+
+		shader::modify::setVec3(cubeProgram, "light.ambient", 0.2f, 0.2f, 0.2f);
+		shader::modify::setVec3(cubeProgram, "light.diffuse", 0.5f, 0.5f, 0.5f);
+		shader::modify::setVec3(cubeProgram, "light.specular", 1.0f, 1.0f, 1.0f);
 		cube.draw(cubeProgram);
 		// -- end draw cube
 
 		// draw sun
 		glUseProgram(sunProgram);
 		modelMat = glm::mat4(1.0f);
-		modelMat = glm::translate(modelMat, glm::vec3(3.0f, 3.0f, -3.0f));
-		modelMat = glm::scale(modelMat, glm::vec3(1.0f, 1.0f, 1.0f));
+		modelMat = glm::translate(modelMat, sunPosition);
 		shader::modify::setMat4(sunProgram, "projection_matrix", projectionMat);
 		shader::modify::setMat4(sunProgram, "view_matrix", viewMat);
 		shader::modify::setMat4(sunProgram, "model_matrix", modelMat);
+		shader::modify::setVec3(sunProgram, "light_color", lightColor);
 		sun.draw(sunProgram);
 		// -- end draw sun
 
