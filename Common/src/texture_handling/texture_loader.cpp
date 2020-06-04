@@ -8,7 +8,7 @@
 
 namespace texture_loader
 {
-	GLuint getTextureFromFile(const std::string& path, const std::string& directory, bool gamma)
+	GLuint getTextureFromFile(const std::string& path, const std::string& directory)
 	{
 		auto filename = directory + '/' + path;
 

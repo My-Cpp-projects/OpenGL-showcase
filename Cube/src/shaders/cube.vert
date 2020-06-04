@@ -7,7 +7,6 @@ layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal_coords;
 layout (location = 2) in vec2 texture_coord;
 
-// flexing on interface blocks :)
 out VS_OUT
 {
     vec2 TexCoord;
@@ -15,9 +14,13 @@ out VS_OUT
     vec3 FragPos;
 } vs_out;
 
+layout(std140) uniform VPMatrices
+{
+    mat4 view_matrix;
+    mat4 projection_matrix;
+};
+
 uniform mat4 model_matrix;
-uniform mat4 view_matrix;
-uniform mat4 projection_matrix;
 
 void main(void)
 {

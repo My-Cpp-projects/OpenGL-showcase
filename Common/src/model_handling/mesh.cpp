@@ -49,7 +49,7 @@ namespace model_handling
 			else if(name == "texture_height")
 				number = std::to_string(heightNr++);
 
-			shader::modify::setInt(shaderProgramId, name + number, i);
+			shader::modify::setInt(shaderProgramId, "material." + name + number, i);
 			glBindTexture(GL_TEXTURE_2D, m_textures[i].m_id);
 		}
 
