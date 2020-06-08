@@ -1,8 +1,8 @@
 
 
 #include "camera/camera.h"
-#include <glm/gtc/matrix_transform.hpp>
 
+#include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) 

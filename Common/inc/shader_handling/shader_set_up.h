@@ -6,18 +6,17 @@
 #define SHADER_LOADER_H
 
 #include "GL/gl3w.h"
+#include "glfw/glfw3.h"
 #include <string>
+#include <vector>
 
-namespace shader
+namespace shader_handling
 {
-	namespace set_up
-	{
-		GLuint loadFromString(const std::string& sourceCode, const GLenum& shaderType);
+	GLuint loadFromString(const std::string& sourceCode, const GLenum& shaderType);
 
-		GLuint loadFromFile(const std::string& filePath, const GLenum& shaderType);
+	GLuint loadFromFile(const std::string& filePath, const GLenum& shaderType);
 
-		GLuint linkProgramFromShaders(std::vector<GLuint>& shaders, bool delete_shaders);
-	}
+	GLuint linkProgramFromShaders(std::vector<GLuint>& shaders, bool delete_shaders);
 }
 
 #endif /* SHADER_LOADER_H */

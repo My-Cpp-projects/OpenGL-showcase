@@ -5,13 +5,13 @@
 #ifndef SHOWCASE_BASE
 #define SHOWCASE_BASE
 
-#include <string>
 #include "abstract_showcase.h"
+#include <string>
 
 class ShowcaseBase : public AbstractShowcase
 {
 public:
-	ShowcaseBase(std::string&& sceneName);
+	ShowcaseBase(const std::string& sceneName);
 	virtual ~ShowcaseBase() = default;
 
 	virtual void run() override = 0;

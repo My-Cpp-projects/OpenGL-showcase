@@ -2,102 +2,98 @@
 
 
 
+#include "shader_handling/shader_set_up.h"
+
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
-#include "shader_handling/shader_set_up.h"
-#include "glfw/glfw3.h"
-
 
 std::string shaderTypeToString(GLenum shaderType);
 std::string extractFileContent(const std::string& filePath);
 
-namespace shader
+namespace shader_handling
 {
-	namespace set_up
+	GLuint loadFromString(const std::string& sourceCode, const GLenum& shaderType)
 	{
-		GLuint loadFromString(const std::string& sourceCode, const GLenum& shaderType)
+		auto result = glCreateShader(shaderType);
+		const GLchar* const s = sourceCode.c_str();
+		glShaderSource(result, 1, &s, nullptr);
+
+		glCompileShader(result);
+
+		GLint status = 0;
+		glGetShaderiv(result, GL_COMPILE_STATUS, &status);
+
+		if(not status)
 		{
-			auto result = glCreateShader(shaderType);
-			const GLchar* const s = sourceCode.c_str();
-			glShaderSource(result, 1, &s, nullptr);
+			constexpr short logSize = 4096;
+			char buffer[logSize];
+			glGetShaderInfoLog(result, logSize, nullptr, buffer);
+			printf("Didn't manage to compile shader of type: %s, error: %s ",
+					shaderTypeToString(shaderType).c_str(),
+					buffer);
+			glDeleteShader(result);
+			return 0;
+		}
 
-			glCompileShader(result);
+		return result;
+	}
 
-			GLint status = 0;
-			glGetShaderiv(result, GL_COMPILE_STATUS, &status);
+	GLuint loadFromFile(const std::string& filePath, const GLenum& shaderType)
+	{
+		GLuint result = 0;
 
-			if(not status)
-			{
-				constexpr short logSize = 4096;
-				char buffer[logSize];
-				glGetShaderInfoLog(result, logSize, nullptr, buffer);
-				printf("Didn't manage to compile shader of type: %s, error: %s ",
-					   shaderTypeToString(shaderType).c_str(),
-					   buffer);
-				glDeleteShader(result);
-				return 0;
-			}
-
+		auto fileContent = extractFileContent(filePath);
+		if(fileContent.empty())
+		{
+			printf("Shader file content is empty. filePath: %s\n", filePath.c_str());
 			return result;
 		}
 
-		GLuint loadFromFile(const std::string& filePath, const GLenum& shaderType)
+		result = loadFromString(fileContent, shaderType);
+
+		if(0 == result)
 		{
-			GLuint result = 0;
-
-			auto fileContent = extractFileContent(filePath);
-			if(fileContent.empty())
-			{
-				printf("Shader file content is empty. filePath: %s\n", filePath.c_str());
-				return result;
-			}
-
-			result = loadFromString(fileContent, shaderType);
-
-			if(0 == result)
-			{
-				printf("Failed to compile shader: %s\n", filePath.c_str());
-			}
-
-			return result;
+			printf("Failed to compile shader: %s\n", filePath.c_str());
 		}
 
-		GLuint linkProgramFromShaders(std::vector<GLuint>& shaders, bool delete_shaders)
-		{
-			auto program = glCreateProgram();
+		return result;
+	}
 
+	GLuint linkProgramFromShaders(std::vector<GLuint>& shaders, bool delete_shaders)
+	{
+		auto program = glCreateProgram();
+
+		for(auto& shader : shaders)
+		{
+			glAttachShader(program, shader);
+		}
+
+		glLinkProgram(program);
+
+		GLint status;
+		glGetProgramiv(program, GL_LINK_STATUS, &status);
+
+		if(not status)
+		{
+			const short logSize = 4096;
+			char buffer[logSize];
+			glGetProgramInfoLog(program, logSize, nullptr, buffer);
+			glDeleteProgram(program);
+			printf("Didn't manage to compile shaders into program. Reason:\n%s", buffer);
+			return 0;
+		}
+
+		if(delete_shaders)
+		{
 			for(auto& shader : shaders)
 			{
-				glAttachShader(program, shader);
+				glDeleteShader(shader);
 			}
-
-			glLinkProgram(program);
-
-			GLint status;
-			glGetProgramiv(program, GL_LINK_STATUS, &status);
-
-			if(not status)
-			{
-				const short logSize = 4096;
-				char buffer[logSize];
-				glGetProgramInfoLog(program, logSize, nullptr, buffer);
-				glDeleteProgram(program);
-				printf("Didn't manage to compile shaders into program. Reason:\n%s", buffer);
-				return 0;
-			}
-
-			if(delete_shaders)
-			{
-				for(auto& shader : shaders)
-				{
-					glDeleteShader(shader);
-				}
-			}
-
-			return program;
 		}
+
+		return program;
 	}
 }
 

@@ -5,22 +5,29 @@
 #ifndef CUBE_SHOWCASE_h
 #define CUBE_SHOWCASE_h
 
+#include "scene/showcase_base.h"
+
+#include "GL/gl3w.h"
 #include "glfw/glfw3.h"
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
 #include <memory>
-#include "scene/showcase_base.h"
 
 namespace model_handling
 {
 	class Model;
 }
 
+namespace shader_handling
+{
+	class ShaderProgram;
+}
+
 class CubeShowcase : public ShowcaseBase
 {
 public:
-	CubeShowcase(std::string&& sceneName);
+	CubeShowcase(const std::string& sceneName);
 	virtual ~CubeShowcase();
 	void run() override;
 
@@ -53,7 +60,7 @@ private:
 	std::string m_showcaseName;
 	GLFWwindow* m_window;
 
-	std::vector<GLuint> m_shaderPrograms;
+	std::vector<std::unique_ptr<shader_handling::ShaderProgram>> m_shaderPrograms;
 	std::vector<GLuint> m_buffers;
 
 	std::vector<glm::vec3> m_cubePositions;

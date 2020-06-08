@@ -2,11 +2,10 @@
 
 
 
-#include <glm/gtc/matrix_transform.hpp>
-#include "gl3w/GL/gl3w.h"
-
-#include "model_handling/mesh.h"
 #include "shader_handling/shader_modify.h"
+#include "model_handling/mesh.h"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace model_handling
 {
@@ -49,7 +48,7 @@ namespace model_handling
 			else if(name == "texture_height")
 				number = std::to_string(heightNr++);
 
-			shader::modify::setInt(shaderProgramId, "material." + name + number, i);
+			shader_handling::setInt(shaderProgramId, "material." + name + number, i);
 			glBindTexture(GL_TEXTURE_2D, m_textures[i].m_id);
 		}
 

@@ -5,8 +5,8 @@
 #ifndef TEXTURE_LOADER
 #define TEXTURE_LOADER
 
-#include "GL/gl3w.h"
 #include <string>
+#include "GL/gl3w.h"
 
 namespace texture_loader
 {

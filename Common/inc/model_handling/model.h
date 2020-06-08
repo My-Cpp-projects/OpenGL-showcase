@@ -5,13 +5,14 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include "model_handling/mesh.h"
+
+#include "GL/gl3w.h"
 #include "glfw/glfw3.h"
 #include <assimp/scene.h>
 #include <string>
 #include <vector>
 #include <memory>
-
-#include "model_handling/mesh.h"
 
 namespace model_handling
 {

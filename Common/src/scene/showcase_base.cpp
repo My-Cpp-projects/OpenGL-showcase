@@ -6,7 +6,7 @@
 
 void printDefaultMessage(std::string&& funcName);
 
-ShowcaseBase::ShowcaseBase(std::string&& sceneName)
+ShowcaseBase::ShowcaseBase(const std::string& sceneName)
 {
 	printf("Creating showcase: %s\n", sceneName.c_str());
 }

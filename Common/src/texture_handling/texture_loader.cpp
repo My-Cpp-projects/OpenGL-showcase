@@ -2,9 +2,10 @@
 
 
 
-#include <iostream>
 #include "texture_handling/texture_loader.h"
 #include "image_loading/stb_image.h"
+
+#include <iostream>
 
 namespace texture_loader
 {

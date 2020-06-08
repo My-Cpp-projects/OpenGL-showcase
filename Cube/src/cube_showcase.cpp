@@ -1,22 +1,20 @@
 
 
 
-#include <iostream>
-#include <vector>
 
-#include "gl3w/GL/gl3w.h"
-#include "glfw/glfw3.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include "shader_handling/shader_set_up.h"
-#include "shader_handling/shader_modify.h"
+#include "cube_showcase.h"
 #include "camera/camera.h"
 #include "window/window.h"
 #include "model_handling/model.h"
-#include "cube_showcase.h"
+#include "shader_handling/shader_program.h"
+
+#include "gl3w/GL/gl3w.h"
+#include "glfw/glfw3.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
+#include <vector>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -26,8 +24,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
 
-CubeShowcase::CubeShowcase(std::string&& sceneName)
-	: ShowcaseBase(std::move(sceneName))
+CubeShowcase::CubeShowcase(const std::string& sceneName)
+	: ShowcaseBase(sceneName)
 	, m_showcaseName(sceneName)
 	, m_window(nullptr)
 	, m_shaderPrograms(shaderPrograms::SHADER_COUNT)
@@ -53,8 +51,8 @@ void CubeShowcase::run()
 
 	auto deltaTime = 0.0f;
 	auto lastFrame = 0.0f;
-	const auto& cubeShaderProgram = m_shaderPrograms[shaderPrograms::CUBE];
-	const auto& lightShaderProgram = m_shaderPrograms[shaderPrograms::LIGHT];
+	auto& cubeShaderProgram = m_shaderPrograms[shaderPrograms::CUBE];
+	auto& lightShaderProgram = m_shaderPrograms[shaderPrograms::LIGHT];
 
 	while(glfwWindowShouldClose(m_window) != GL_TRUE)
 	{
@@ -81,21 +79,21 @@ void CubeShowcase::run()
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// draw cube
-		glUseProgram(cubeShaderProgram);
+		glUseProgram(cubeShaderProgram->getProgramId());
 
+		cubeShaderProgram
 		// material of object
-		shader::modify::setFloat(cubeShaderProgram, "material.shininess", 32.0f);
+			->setFloat("material.shininess", 32.0f)
 		// camera position required for view_direction
-		shader::modify::setVec3(cubeShaderProgram, "view_pos", camera.m_position);
-
-		// point light
-		shader::modify::setVec3(cubeShaderProgram, "pointLight.position", m_pointLightPosition);
-		shader::modify::setVec3(cubeShaderProgram, "pointLight.ambient", 0.05f, 0.05f, 0.05f);
-		shader::modify::setVec3(cubeShaderProgram, "pointLight.diffuse", 0.8f, 0.8f, 0.8f);
-		shader::modify::setVec3(cubeShaderProgram, "pointLight.specular", 1.0f, 1.0f, 1.0f);
-		shader::modify::setFloat(cubeShaderProgram, "pointLight.constant", 1.0f);
-		shader::modify::setFloat(cubeShaderProgram, "pointLight.linear", 0.09);
-		shader::modify::setFloat(cubeShaderProgram, "pointLight.quadratic", 0.032);
+			.setVec3("view_pos", camera.m_position)
+		// point light		
+			.setVec3("pointLight.position", m_pointLightPosition)
+			.setVec3("pointLight.diffuse", 0.8f, 0.8f, 0.8f)
+			.setVec3("pointLight.ambient", 0.05f, 0.05f, 0.05f)
+			.setVec3("pointLight.specular", 1.0f, 1.0f, 1.0f)
+			.setFloat("pointLight.constant", 1.0f)
+			.setFloat("pointLight.linear", 0.09)
+			.setFloat("pointLight.quadratic", 0.032);
 
 		// position in the scene
 		auto modelMat = glm::mat4(1.0f);
@@ -103,19 +101,20 @@ void CubeShowcase::run()
 		{
 			modelMat = glm::mat4(1.0f);
 			modelMat = glm::translate(modelMat, pos);
-			shader::modify::setMat4(cubeShaderProgram, "model_matrix", modelMat);
-			m_cube->draw(cubeShaderProgram);
+			cubeShaderProgram->setMat4("model_matrix", modelMat);
+			m_cube->draw(cubeShaderProgram->getProgramId());
 		}
 		// -- end draw cube
 
 		// draw sun
-		glUseProgram(lightShaderProgram);
+		glUseProgram(lightShaderProgram->getProgramId());
 		modelMat = glm::mat4(1.0f);
 		modelMat = glm::translate(modelMat, m_sunPosition);
 		modelMat = glm::scale(modelMat, glm::vec3(0.3, 0.3, 0.3));
-		shader::modify::setMat4(lightShaderProgram, "model_matrix", modelMat);
-		shader::modify::setVec3(lightShaderProgram, "light_color", m_lightColor);
-		m_sun->draw(lightShaderProgram);
+		lightShaderProgram
+			->setMat4("model_matrix", modelMat)
+			.setVec3("light_color", m_lightColor);
+		m_sun->draw(lightShaderProgram->getProgramId());
 		// -- end draw sun
 
 		// update point light position
@@ -124,12 +123,13 @@ void CubeShowcase::run()
 		m_pointLightPosition.z = cos(glfwGetTime()) * 4.0f;
 
 		// draw point light
-		glUseProgram(lightShaderProgram);
+		glUseProgram(lightShaderProgram->getProgramId());
 		modelMat = glm::mat4(1.0f);
 		modelMat = glm::translate(modelMat, m_pointLightPosition);
-		shader::modify::setMat4(lightShaderProgram, "model_matrix", modelMat);
-		shader::modify::setVec3(lightShaderProgram, "light_color", m_lightColor);
-		m_sun->draw(lightShaderProgram);
+		lightShaderProgram
+			->setMat4("model_matrix", modelMat)
+			.setVec3("light_color", m_lightColor);
+		m_sun->draw(lightShaderProgram->getProgramId());
 		// -- end draw point light
 
 		glfwSwapBuffers(m_window);
@@ -172,22 +172,27 @@ void CubeShowcase::setupInitialPositions()
 
 void CubeShowcase::loadShaders()
 {
-	auto vertexShader = shader::set_up::loadFromFile("src/shaders/cube.vert", GL_VERTEX_SHADER);
-	auto fragmentShader = shader::set_up::loadFromFile("src/shaders/cube.frag", GL_FRAGMENT_SHADER);
-	std::vector<GLuint> shaders = { vertexShader, fragmentShader };
-	m_shaderPrograms[shaderPrograms::CUBE] = shader::set_up::linkProgramFromShaders(shaders, true);
+	auto cubeShader = std::make_unique<shader_handling::ShaderProgram>();
+	cubeShader
+		->attachShader("src/shaders/cube.vert", GL_VERTEX_SHADER)
+		.attachShader("src/shaders/cube.frag", GL_FRAGMENT_SHADER)
+		.linkProgram();
 
-	auto light_vertexShader = shader::set_up::loadFromFile("src/shaders/sun.vert", GL_VERTEX_SHADER);
-	auto light_fragmentShader = shader::set_up::loadFromFile("src/shaders/sun.frag", GL_FRAGMENT_SHADER);
-	std::vector<GLuint> sun_shaders = { light_vertexShader, light_fragmentShader };
-	m_shaderPrograms[shaderPrograms::LIGHT] = shader::set_up::linkProgramFromShaders(sun_shaders, true);
+	m_shaderPrograms[shaderPrograms::CUBE] = std::move(cubeShader);
+
+	auto lightSourceShader = std::make_unique<shader_handling::ShaderProgram>();;
+	lightSourceShader
+		->attachShader("src/shaders/sun.vert", GL_VERTEX_SHADER)
+		.attachShader("src/shaders/sun.frag", GL_FRAGMENT_SHADER)
+		.linkProgram();
+	m_shaderPrograms[shaderPrograms::LIGHT] = std::move(lightSourceShader);
 }
 
 void CubeShowcase::setupShaders()
 {
 	glGenBuffers(m_buffers.size(), &m_buffers.front());
-	const auto& cubeShaderProgram = m_shaderPrograms[shaderPrograms::CUBE];
-	const auto& lightShaderProgram = m_shaderPrograms[shaderPrograms::LIGHT];
+	const auto& cubeShaderProgram = m_shaderPrograms[shaderPrograms::CUBE]->getProgramId();
+	const auto& lightShaderProgram = m_shaderPrograms[shaderPrograms::LIGHT]->getProgramId();
 
 	// set the uniform buffer object for VPMatrices
 	auto cubeVPUniformBlockPos = glGetUniformBlockIndex(cubeShaderProgram, "VPMatrices");
@@ -221,9 +226,6 @@ void CubeShowcase::setupShaders()
 
 void CubeShowcase::cleanup()
 {
-	for(auto program : m_shaderPrograms)
-		glDeleteProgram(program);
-
 	glDeleteBuffers(m_buffers.size(), &m_buffers.front());
 }
 

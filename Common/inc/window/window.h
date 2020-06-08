@@ -5,10 +5,10 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include "GL/gl3w.h"
+#include "glfw/glfw3.h"
 #include <string>
 #include <memory>
-#include "gl3w/GL/gl3w.h"
-#include "glfw/glfw3.h"
 
 class Window
 {

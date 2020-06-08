@@ -2,6 +2,10 @@
 
 
 
+#include "model_handling/mesh.h"
+#include "model_handling/model.h"
+#include "texture_handling/texture_loader.h"
+
 #include "gl3w/GL/gl3w.h"
 #include "glfw/glfw3.h"
 #include <glm/glm.hpp>
@@ -9,10 +13,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <iostream>
-
-#include "model_handling/mesh.h"
-#include "model_handling/model.h"
-#include "texture_handling/texture_loader.h"
 
 namespace model_handling
 {

@@ -5,12 +5,12 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include "GL/gl3w.h"
 #include "glfw/glfw3.h"
 #include <glm/glm.hpp>
 
 #include <string>
 #include <vector>
-
 
 namespace model_handling
 {

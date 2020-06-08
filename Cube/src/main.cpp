@@ -2,8 +2,8 @@
 
 
 
-#include <memory>
 #include "cube_showcase.h"
+#include <memory>
 
 int main()
 {

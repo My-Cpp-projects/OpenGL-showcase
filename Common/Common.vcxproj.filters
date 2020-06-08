@@ -87,6 +87,9 @@
     <ClCompile Include="src\scene\showcase_base.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\shader_handling\shader_program.cpp">
+      <Filter>Source Files\shader_handling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\camera\camera.h">
@@ -118,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="inc\scene\showcase_base.h">
       <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\shader_handling\shader_program.h">
+      <Filter>Header Files\shader_handling</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
