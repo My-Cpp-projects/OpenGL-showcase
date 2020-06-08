@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenGL_showcase", "OpenGL_showcase\OpenGL_showcase.vcxproj", "{2F7957FF-4A1A-4479-B2CA-26C2D36C90F7}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cube", "Cube\Cube.vcxproj", "{6953911A-2F6D-402C-8062-E1B70A805316}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcxproj", "{FCEF3D12-D76D-4771-9C24-CA675B1CA9A8}"
@@ -15,10 +13,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2F7957FF-4A1A-4479-B2CA-26C2D36C90F7}.Debug|x64.ActiveCfg = Debug|x64
-		{2F7957FF-4A1A-4479-B2CA-26C2D36C90F7}.Debug|x64.Build.0 = Debug|x64
-		{2F7957FF-4A1A-4479-B2CA-26C2D36C90F7}.Release|x64.ActiveCfg = Release|x64
-		{2F7957FF-4A1A-4479-B2CA-26C2D36C90F7}.Release|x64.Build.0 = Release|x64
 		{6953911A-2F6D-402C-8062-E1B70A805316}.Debug|x64.ActiveCfg = Debug|x64
 		{6953911A-2F6D-402C-8062-E1B70A805316}.Debug|x64.Build.0 = Debug|x64
 		{6953911A-2F6D-402C-8062-E1B70A805316}.Release|x64.ActiveCfg = Release|x64
