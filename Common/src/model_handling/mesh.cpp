@@ -16,7 +16,7 @@ namespace model_handling
 		: m_vertices(vertices)
 		, m_indices(indices)
 		, m_textures(textures)
-		, m_buffers(2)
+		, m_buffers(COUNT)
 	{
 		setupMesh();
 	}

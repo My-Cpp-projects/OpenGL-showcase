@@ -47,6 +47,8 @@ namespace model_handling
 		{
 			VERTEX = 0,
 			INDEX,
+
+			COUNT
 		};
 		std::vector<GLuint> m_buffers;
 		std::vector<Vertex> m_vertices;

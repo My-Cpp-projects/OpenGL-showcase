@@ -49,6 +49,12 @@
     <Filter Include="Source Files\texture_handling">
       <UniqueIdentifier>{71c3deeb-339f-4e99-92f6-be79e37ed68a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\scene">
+      <UniqueIdentifier>{1fdefe4c-6c01-4704-90ce-c462f7d34439}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scene">
+      <UniqueIdentifier>{dc3a0ad0-6162-4947-bdca-22b1a8c891f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_External\gl3w.c">
@@ -78,6 +84,9 @@
     <ClCompile Include="src\texture_handling\texture_loader.cpp">
       <Filter>Source Files\texture_handling</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\showcase_base.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\camera\camera.h">
@@ -103,6 +112,12 @@
     </ClInclude>
     <ClInclude Include="inc\texture_handling\texture_loader.h">
       <Filter>Header Files\texture_handling</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\scene\abstract_showcase.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\scene\showcase_base.h">
+      <Filter>Header Files\scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
