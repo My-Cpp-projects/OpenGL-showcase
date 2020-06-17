@@ -23,6 +23,7 @@ namespace shader_handling
 		void linkProgram(bool deleteShaders = true);
 
 		GLuint getProgramId() const;
+		void use() const;
 
 		ShaderProgram& setBool(const std::string& name, bool value);
 		ShaderProgram& setInt(const std::string& name, int value);

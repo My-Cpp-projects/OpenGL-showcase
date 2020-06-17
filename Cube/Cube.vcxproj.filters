@@ -35,6 +35,12 @@
     <None Include="src\shaders\sun.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="src\shaders\skybox.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\shaders\skybox.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cube_showcase.h">

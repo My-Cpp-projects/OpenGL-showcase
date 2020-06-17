@@ -32,6 +32,11 @@ namespace shader_handling
 			m_shaders.clear();
 	}
 
+	void ShaderProgram::use() const
+	{
+		glUseProgram(m_programId);
+	}
+
 	GLuint ShaderProgram::getProgramId() const
 	{
 		return m_programId;

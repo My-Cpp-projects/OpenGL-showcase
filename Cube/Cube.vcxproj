@@ -172,6 +172,8 @@
   <ItemGroup>
     <None Include="src\shaders\cube.frag" />
     <None Include="src\shaders\cube.vert" />
+    <None Include="src\shaders\skybox.frag" />
+    <None Include="src\shaders\skybox.vert" />
     <None Include="src\shaders\sun.frag" />
     <None Include="src\shaders\sun.vert" />
   </ItemGroup>

@@ -44,6 +44,7 @@ private:
 	{
 		CUBE = 0,
 		LIGHT,
+		SKYBOX,
 		
 		SHADER_COUNT
 	};
@@ -71,6 +72,9 @@ private:
 
 	std::unique_ptr<model_handling::Model> m_cube;
 	std::unique_ptr<model_handling::Model> m_sun;
+
+	// SKYBOX
+	GLuint m_cubemapTexture;
 };
 
 #endif // !CUBE_SHOWCASE_h

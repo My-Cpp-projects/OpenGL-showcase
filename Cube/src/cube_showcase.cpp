@@ -7,6 +7,7 @@
 #include "window/window.h"
 #include "model_handling/model.h"
 #include "shader_handling/shader_program.h"
+#include "texture_handling/texture_loader.h"
 
 #include "gl3w/GL/gl3w.h"
 #include "glfw/glfw3.h"
@@ -45,6 +46,21 @@ CubeShowcase::~CubeShowcase()
 
 void CubeShowcase::run()
 {
+	unsigned int skyboxVAO;
+	glGenVertexArrays(1, &skyboxVAO);
+	glBindVertexArray(skyboxVAO);
+
+	std::vector<std::string> faces
+	{
+			"../_Assets/textures/skyboxes/forest/right.jpg",
+			"../_Assets/textures/skyboxes/forest/left.jpg",
+			"../_Assets/textures/skyboxes/forest/top.jpg",
+			"../_Assets/textures/skyboxes/forest/bottom.jpg",
+			"../_Assets/textures/skyboxes/forest/front.jpg",
+			"../_Assets/textures/skyboxes/forest/back.jpg"
+	};
+	m_cubemapTexture = texture_loader::loadCubeMap(faces);
+
 	// ----- Enabe/disable openGL functions
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -53,6 +69,7 @@ void CubeShowcase::run()
 	auto lastFrame = 0.0f;
 	auto& cubeShaderProgram = m_shaderPrograms[shaderPrograms::CUBE];
 	auto& lightShaderProgram = m_shaderPrograms[shaderPrograms::LIGHT];
+	auto& skyboxShaderProgram = m_shaderPrograms[shaderPrograms::SKYBOX];
 
 	while(glfwWindowShouldClose(m_window) != GL_TRUE)
 	{
@@ -79,7 +96,7 @@ void CubeShowcase::run()
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// draw cube
-		glUseProgram(cubeShaderProgram->getProgramId());
+		cubeShaderProgram->use();
 
 		cubeShaderProgram
 		// material of object
@@ -107,7 +124,7 @@ void CubeShowcase::run()
 		// -- end draw cube
 
 		// draw sun
-		glUseProgram(lightShaderProgram->getProgramId());
+		lightShaderProgram->use();
 		modelMat = glm::mat4(1.0f);
 		modelMat = glm::translate(modelMat, m_sunPosition);
 		modelMat = glm::scale(modelMat, glm::vec3(0.3, 0.3, 0.3));
@@ -123,7 +140,7 @@ void CubeShowcase::run()
 		m_pointLightPosition.z = cos(glfwGetTime()) * 4.0f;
 
 		// draw point light
-		glUseProgram(lightShaderProgram->getProgramId());
+		lightShaderProgram->use();
 		modelMat = glm::mat4(1.0f);
 		modelMat = glm::translate(modelMat, m_pointLightPosition);
 		lightShaderProgram
@@ -131,6 +148,16 @@ void CubeShowcase::run()
 			.setVec3("light_color", m_lightColor);
 		m_sun->draw(lightShaderProgram->getProgramId());
 		// -- end draw point light
+
+		// draw skybox
+		skyboxShaderProgram->use();
+		// skybox cube
+		glBindVertexArray(skyboxVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapTexture);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glBindVertexArray(0);
+		// -- end draw skybox
 
 		glfwSwapBuffers(m_window);
 		glfwPollEvents();
@@ -177,15 +204,21 @@ void CubeShowcase::loadShaders()
 		->attachShader("src/shaders/cube.vert", GL_VERTEX_SHADER)
 		.attachShader("src/shaders/cube.frag", GL_FRAGMENT_SHADER)
 		.linkProgram();
-
 	m_shaderPrograms[shaderPrograms::CUBE] = std::move(cubeShader);
 
-	auto lightSourceShader = std::make_unique<shader_handling::ShaderProgram>();;
+	auto lightSourceShader = std::make_unique<shader_handling::ShaderProgram>();
 	lightSourceShader
 		->attachShader("src/shaders/sun.vert", GL_VERTEX_SHADER)
 		.attachShader("src/shaders/sun.frag", GL_FRAGMENT_SHADER)
 		.linkProgram();
 	m_shaderPrograms[shaderPrograms::LIGHT] = std::move(lightSourceShader);
+
+	auto skyboxShader = std::make_unique<shader_handling::ShaderProgram>();
+	skyboxShader
+		->attachShader("src/shaders/skybox.vert", GL_VERTEX_SHADER)
+		.attachShader("src/shaders/skybox.frag", GL_FRAGMENT_SHADER)
+		.linkProgram();
+	m_shaderPrograms[shaderPrograms::SKYBOX] = std::move(skyboxShader);
 }
 
 void CubeShowcase::setupShaders()
@@ -193,12 +226,15 @@ void CubeShowcase::setupShaders()
 	glGenBuffers(m_buffers.size(), &m_buffers.front());
 	const auto& cubeShaderProgram = m_shaderPrograms[shaderPrograms::CUBE]->getProgramId();
 	const auto& lightShaderProgram = m_shaderPrograms[shaderPrograms::LIGHT]->getProgramId();
+	const auto& skyboxShaderProgram = m_shaderPrograms[shaderPrograms::SKYBOX]->getProgramId();
 
 	// set the uniform buffer object for VPMatrices
 	auto cubeVPUniformBlockPos = glGetUniformBlockIndex(cubeShaderProgram, "VPMatrices");
 	auto lightVPUniformBlockPos = glGetUniformBlockIndex(lightShaderProgram, "VPMatrices");
-	glUniformBlockBinding(cubeShaderProgram, cubeVPUniformBlockPos, 0);
-	glUniformBlockBinding(lightShaderProgram, lightVPUniformBlockPos, 0);
+	auto skyboxVPUniformBlockPos = glGetUniformBlockIndex(skyboxShaderProgram, "VPMatrices");
+	glUniformBlockBinding(cubeShaderProgram, cubeVPUniformBlockPos, buffer::VP_MATRICES);
+	glUniformBlockBinding(lightShaderProgram, lightVPUniformBlockPos, buffer::VP_MATRICES);
+	glUniformBlockBinding(skyboxShaderProgram, skyboxVPUniformBlockPos, buffer::VP_MATRICES);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, m_buffers[buffer::VP_MATRICES]);
 	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
@@ -207,7 +243,7 @@ void CubeShowcase::setupShaders()
 
 	// set the uniform buffer object for sunLight
 	auto cubeSunLightUniformBlockPos = glGetUniformBlockIndex(cubeShaderProgram, "SunLight");
-	glUniformBlockBinding(cubeShaderProgram, cubeSunLightUniformBlockPos, 1);
+	glUniformBlockBinding(cubeShaderProgram, cubeSunLightUniformBlockPos, buffer::SUN_LIGHT);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, m_buffers[buffer::SUN_LIGHT]);
 	glBufferData(GL_UNIFORM_BUFFER, 4 * sizeof(glm::vec4), nullptr, GL_STATIC_DRAW);
