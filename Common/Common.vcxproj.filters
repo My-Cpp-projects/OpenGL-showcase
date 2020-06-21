@@ -55,6 +55,12 @@
     <Filter Include="Header Files\scene">
       <UniqueIdentifier>{1fdefe4c-6c01-4704-90ce-c462f7d34439}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\drawables">
+      <UniqueIdentifier>{c477f449-20f6-4ce2-a4be-488bf7b13e0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\skybox">
+      <UniqueIdentifier>{11168303-600c-4ec2-8e46-84887a4bff88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\_External\gl3w.c">
@@ -90,6 +96,9 @@
     <ClCompile Include="src\shader_handling\shader_program.cpp">
       <Filter>Source Files\shader_handling</Filter>
     </ClCompile>
+    <ClCompile Include="src\drawables\skybox.cpp">
+      <Filter>Source Files\skybox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\camera\camera.h">
@@ -124,6 +133,12 @@
     </ClInclude>
     <ClInclude Include="inc\shader_handling\shader_program.h">
       <Filter>Header Files\shader_handling</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\drawables\abstract_drawable.h">
+      <Filter>Header Files\drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\drawables\skybox.h">
+      <Filter>Header Files\drawables</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

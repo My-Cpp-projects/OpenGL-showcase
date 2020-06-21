@@ -172,6 +172,7 @@
   <ItemGroup>
     <ClCompile Include="..\_External\gl3w.c" />
     <ClCompile Include="src\camera\camera.cpp" />
+    <ClCompile Include="src\drawables\skybox.cpp" />
     <ClCompile Include="src\image_loading\stb_image.cpp" />
     <ClCompile Include="src\model_handling\mesh.cpp" />
     <ClCompile Include="src\model_handling\model.cpp" />
@@ -184,6 +185,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\camera\camera.h" />
+    <ClInclude Include="inc\drawables\abstract_drawable.h" />
+    <ClInclude Include="inc\drawables\skybox.h" />
     <ClInclude Include="inc\image_loading\stb_image.h" />
     <ClInclude Include="inc\model_handling\mesh.h" />
     <ClInclude Include="inc\model_handling\model.h" />

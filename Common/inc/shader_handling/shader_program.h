@@ -30,13 +30,8 @@ namespace shader_handling
 		ShaderProgram& setFloat(const std::string& name, float value);
 
 		ShaderProgram& setVec2(const std::string& name, const glm::vec2& value);
-		ShaderProgram& setVec2(const std::string& name, float x, float y);
-
 		ShaderProgram& setVec3(const std::string& name, const glm::vec3& value);
-		ShaderProgram& setVec3(const std::string& name, float x, float y, float z);
-
 		ShaderProgram& setVec4(const std::string& name, const glm::vec4& value);
-		ShaderProgram& setVec4(const std::string& name, float x, float y, float z, float w);
 
 		ShaderProgram& setMat2(const std::string& name, const glm::mat2& mat);
 		ShaderProgram& setMat3(const std::string& name, const glm::mat3& mat);

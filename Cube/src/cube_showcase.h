@@ -24,6 +24,8 @@ namespace shader_handling
 	class ShaderProgram;
 }
 
+class AbstractDrawable;
+
 class CubeShowcase : public ShowcaseBase
 {
 public:
@@ -72,9 +74,7 @@ private:
 
 	std::unique_ptr<model_handling::Model> m_cube;
 	std::unique_ptr<model_handling::Model> m_sun;
-
-	// SKYBOX
-	GLuint m_cubemapTexture;
+	std::unique_ptr<AbstractDrawable> m_skybox;
 };
 
 #endif // !CUBE_SHOWCASE_h

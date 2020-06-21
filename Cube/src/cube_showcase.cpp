@@ -8,6 +8,7 @@
 #include "model_handling/model.h"
 #include "shader_handling/shader_program.h"
 #include "texture_handling/texture_loader.h"
+#include "drawables/skybox.h"
 
 #include "gl3w/GL/gl3w.h"
 #include "glfw/glfw3.h"
@@ -46,21 +47,6 @@ CubeShowcase::~CubeShowcase()
 
 void CubeShowcase::run()
 {
-	unsigned int skyboxVAO;
-	glGenVertexArrays(1, &skyboxVAO);
-	glBindVertexArray(skyboxVAO);
-
-	std::vector<std::string> faces
-	{
-			"../_Assets/textures/skyboxes/forest/right.jpg",
-			"../_Assets/textures/skyboxes/forest/left.jpg",
-			"../_Assets/textures/skyboxes/forest/top.jpg",
-			"../_Assets/textures/skyboxes/forest/bottom.jpg",
-			"../_Assets/textures/skyboxes/forest/front.jpg",
-			"../_Assets/textures/skyboxes/forest/back.jpg"
-	};
-	m_cubemapTexture = texture_loader::loadCubeMap(faces);
-
 	// ----- Enabe/disable openGL functions
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -96,18 +82,16 @@ void CubeShowcase::run()
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// draw cube
-		cubeShaderProgram->use();
-
 		cubeShaderProgram
-		// material of object
+			// material of object
 			->setFloat("material.shininess", 32.0f)
-		// camera position required for view_direction
+			// camera position required for view_direction
 			.setVec3("view_pos", camera.m_position)
-		// point light		
+			// point light		
 			.setVec3("pointLight.position", m_pointLightPosition)
-			.setVec3("pointLight.diffuse", 0.8f, 0.8f, 0.8f)
-			.setVec3("pointLight.ambient", 0.05f, 0.05f, 0.05f)
-			.setVec3("pointLight.specular", 1.0f, 1.0f, 1.0f)
+			.setVec3("pointLight.diffuse", { 0.8f, 0.8f, 0.8f })
+			.setVec3("pointLight.ambient", { 0.05f, 0.05f, 0.05f })
+			.setVec3("pointLight.specular", { 1.0f, 1.0f, 1.0f })
 			.setFloat("pointLight.constant", 1.0f)
 			.setFloat("pointLight.linear", 0.09)
 			.setFloat("pointLight.quadratic", 0.032);
@@ -119,18 +103,19 @@ void CubeShowcase::run()
 			modelMat = glm::mat4(1.0f);
 			modelMat = glm::translate(modelMat, pos);
 			cubeShaderProgram->setMat4("model_matrix", modelMat);
+			cubeShaderProgram->use();
 			m_cube->draw(cubeShaderProgram->getProgramId());
 		}
 		// -- end draw cube
 
 		// draw sun
-		lightShaderProgram->use();
 		modelMat = glm::mat4(1.0f);
 		modelMat = glm::translate(modelMat, m_sunPosition);
 		modelMat = glm::scale(modelMat, glm::vec3(0.3, 0.3, 0.3));
 		lightShaderProgram
 			->setMat4("model_matrix", modelMat)
 			.setVec3("light_color", m_lightColor);
+		lightShaderProgram->use();
 		m_sun->draw(lightShaderProgram->getProgramId());
 		// -- end draw sun
 
@@ -140,23 +125,17 @@ void CubeShowcase::run()
 		m_pointLightPosition.z = cos(glfwGetTime()) * 4.0f;
 
 		// draw point light
-		lightShaderProgram->use();
 		modelMat = glm::mat4(1.0f);
 		modelMat = glm::translate(modelMat, m_pointLightPosition);
 		lightShaderProgram
 			->setMat4("model_matrix", modelMat)
 			.setVec3("light_color", m_lightColor);
+		lightShaderProgram->use();
 		m_sun->draw(lightShaderProgram->getProgramId());
 		// -- end draw point light
 
 		// draw skybox
-		skyboxShaderProgram->use();
-		// skybox cube
-		glBindVertexArray(skyboxVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapTexture);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		glBindVertexArray(0);
+		m_skybox->draw(skyboxShaderProgram->getProgramId());
 		// -- end draw skybox
 
 		glfwSwapBuffers(m_window);
@@ -180,6 +159,17 @@ void CubeShowcase::loadModels()
 {
 	m_cube = std::make_unique<model_handling::Model>("../_Assets/models/cube/cube.obj");
 	m_sun = std::make_unique<model_handling::Model>("../_Assets/models/low_poly_sphere/low_poly_sphere.obj");
+
+	std::vector<std::string> skyboxTextures
+	{
+			"../_Assets/textures/skyboxes/forest/right.jpg",
+			"../_Assets/textures/skyboxes/forest/left.jpg",
+			"../_Assets/textures/skyboxes/forest/top.jpg",
+			"../_Assets/textures/skyboxes/forest/bottom.jpg",
+			"../_Assets/textures/skyboxes/forest/front.jpg",
+			"../_Assets/textures/skyboxes/forest/back.jpg"
+	};
+	m_skybox = std::make_unique<Skybox>(skyboxTextures);
 }
 
 void CubeShowcase::setupInitialPositions()
@@ -272,12 +262,21 @@ void processInput(GLFWwindow* window, float deltaTime)
 
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.processKeyboard(Camera_Movement::FORWARD, deltaTime);
+
 	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		camera.processKeyboard(Camera_Movement::BACKWARD, deltaTime);
+
 	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		camera.processKeyboard(Camera_Movement::LEFT, deltaTime);
+
 	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.processKeyboard(Camera_Movement::RIGHT, deltaTime);
+
+	if(glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	if(glfwGetKey(window, GLFW_KEY_X) == GLFW_RELEASE)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

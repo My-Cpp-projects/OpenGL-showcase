@@ -66,33 +66,15 @@ namespace shader_handling
 		return *this;
 	}
 
-	ShaderProgram& ShaderProgram::setVec2(const std::string& name, float x, float y)
-	{
-		shader_handling::setVec2(m_programId, name, x, y);
-		return *this;
-	}
-
 	ShaderProgram& ShaderProgram::setVec3(const std::string& name, const glm::vec3& value)
 	{
 		shader_handling::setVec3(m_programId, name, value);
 		return *this;
 	}
 
-	ShaderProgram& ShaderProgram::setVec3(const std::string& name, float x, float y, float z)
-	{
-		shader_handling::setVec3(m_programId, name, x, y, z);
-		return *this;
-	}
-
 	ShaderProgram& ShaderProgram::setVec4(const std::string& name, const glm::vec4& value)
 	{
 		shader_handling::setVec4(m_programId, name, value);
-		return *this;
-	}
-
-	ShaderProgram& ShaderProgram::setVec4(const std::string& name, float x, float y, float z, float w)
-	{
-		shader_handling::setVec4(m_programId, name, x, y, z, w);
 		return *this;
 	}
 
