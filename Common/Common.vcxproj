@@ -172,10 +172,11 @@
   <ItemGroup>
     <ClCompile Include="..\_External\gl3w.c" />
     <ClCompile Include="src\camera\camera.cpp" />
+    <ClCompile Include="src\drawables\mesh.cpp" />
+    <ClCompile Include="src\drawables\model.cpp" />
     <ClCompile Include="src\drawables\skybox.cpp" />
     <ClCompile Include="src\image_loading\stb_image.cpp" />
-    <ClCompile Include="src\model_handling\mesh.cpp" />
-    <ClCompile Include="src\model_handling\model.cpp" />
+    <ClCompile Include="src\model_handling\model_loader.cpp" />
     <ClCompile Include="src\scene\showcase_base.cpp" />
     <ClCompile Include="src\shader_handling\shader_modify.cpp" />
     <ClCompile Include="src\shader_handling\shader_program.cpp" />
@@ -186,10 +187,11 @@
   <ItemGroup>
     <ClInclude Include="inc\camera\camera.h" />
     <ClInclude Include="inc\drawables\abstract_drawable.h" />
+    <ClInclude Include="inc\drawables\mesh.h" />
+    <ClInclude Include="inc\drawables\model.h" />
     <ClInclude Include="inc\drawables\skybox.h" />
     <ClInclude Include="inc\image_loading\stb_image.h" />
-    <ClInclude Include="inc\model_handling\mesh.h" />
-    <ClInclude Include="inc\model_handling\model.h" />
+    <ClInclude Include="inc\model_handling\model_loader.h" />
     <ClInclude Include="inc\scene\abstract_showcase.h" />
     <ClInclude Include="inc\scene\showcase_base.h" />
     <ClInclude Include="inc\shader_handling\shader_program.h" />

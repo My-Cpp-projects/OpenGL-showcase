@@ -5,15 +5,18 @@
 #ifndef ABSTRACT_DRAWABLE
 #define ABSTRACT_DRAWABLE
 
-#include "shader_handling/shader_program.h"
+#include "GL/gl3w.h"
 
-class AbstractDrawable
+namespace drawables
 {
-public:
-	virtual void draw(unsigned int shaderProgramId = 0) const = 0;
+	class AbstractDrawable
+	{
+	public:
+		virtual void draw(const GLuint& shaderProgramId = 0) const = 0;
 
-	virtual ~AbstractDrawable() = default;
-};
+		virtual ~AbstractDrawable() = default;
+	};
+}
 
 #endif // !ABSTRACT_DRAWABLE
 

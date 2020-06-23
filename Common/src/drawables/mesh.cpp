@@ -3,11 +3,11 @@
 
 
 #include "shader_handling/shader_modify.h"
-#include "model_handling/mesh.h"
+#include "drawables/mesh.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace model_handling
+namespace drawables
 {
 	Mesh::Mesh(std::vector<Vertex> vertices,
 			   std::vector<unsigned int> indices,
@@ -26,8 +26,10 @@ namespace model_handling
 		glDeleteVertexArrays(1, &m_vertexArrayObject);
 	}
 
-	void Mesh::draw(GLuint shaderProgramId) const
+	void Mesh::draw(const GLuint& shaderProgramId) const
 	{
+		glUseProgram(shaderProgramId);
+
 		unsigned int diffuseNr = 1;
 		unsigned int specularNr = 1;
 		unsigned int normalNr = 1;

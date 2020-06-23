@@ -14,17 +14,15 @@
 #include <vector>
 #include <memory>
 
-namespace model_handling
-{
-	class Model;
-}
-
 namespace shader_handling
 {
 	class ShaderProgram;
 }
 
-class AbstractDrawable;
+namespace drawables
+{
+	class AbstractDrawable;
+}
 
 class CubeShowcase : public ShowcaseBase
 {
@@ -72,9 +70,9 @@ private:
 	glm::vec3 m_lightColor;
 	glm::vec3 m_sunlightDir;
 
-	std::unique_ptr<model_handling::Model> m_cube;
-	std::unique_ptr<model_handling::Model> m_sun;
-	std::unique_ptr<AbstractDrawable> m_skybox;
+	std::unique_ptr<drawables::AbstractDrawable> m_cube;
+	std::unique_ptr<drawables::AbstractDrawable> m_sun;
+	std::unique_ptr<drawables::AbstractDrawable> m_skybox;
 };
 
 #endif // !CUBE_SHOWCASE_h

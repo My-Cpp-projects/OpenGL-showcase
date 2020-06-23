@@ -5,14 +5,17 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include "drawables/abstract_drawable.h"
+
 #include "GL/gl3w.h"
 #include "glfw/glfw3.h"
 #include <glm/glm.hpp>
 
 #include <string>
 #include <vector>
+#include <memory>
 
-namespace model_handling
+namespace drawables
 {
 	struct Vertex
 	{
@@ -30,7 +33,7 @@ namespace model_handling
 		std::string m_path;
 	};
 
-	class Mesh
+	class Mesh : public AbstractDrawable
 	{
 	public:
 		Mesh(std::vector<Vertex> vertices,
@@ -38,7 +41,7 @@ namespace model_handling
 			 std::vector<Texture> textures);
 		~Mesh();
 
-		void draw(GLuint shaderProgramId) const;
+		void draw(const GLuint& shaderProgramId) const;
 
 	private:
 		void setupMesh();
@@ -56,6 +59,9 @@ namespace model_handling
 		std::vector<Texture> m_textures;
 		unsigned int m_vertexArrayObject;
 	};
+
+	using Mesh_uptr = std::unique_ptr<Mesh>;
+	using Mesh_sptr = std::shared_ptr<Mesh>;
 }
 
 #endif

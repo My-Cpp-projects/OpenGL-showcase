@@ -58,7 +58,7 @@
     <Filter Include="Header Files\drawables">
       <UniqueIdentifier>{c477f449-20f6-4ce2-a4be-488bf7b13e0e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\skybox">
+    <Filter Include="Source Files\drawables">
       <UniqueIdentifier>{11168303-600c-4ec2-8e46-84887a4bff88}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -81,12 +81,6 @@
     <ClCompile Include="src\image_loading\stb_image.cpp">
       <Filter>Source Files\image_loading</Filter>
     </ClCompile>
-    <ClCompile Include="src\model_handling\mesh.cpp">
-      <Filter>Source Files\model_handling</Filter>
-    </ClCompile>
-    <ClCompile Include="src\model_handling\model.cpp">
-      <Filter>Source Files\model_handling</Filter>
-    </ClCompile>
     <ClCompile Include="src\texture_handling\texture_loader.cpp">
       <Filter>Source Files\texture_handling</Filter>
     </ClCompile>
@@ -97,7 +91,16 @@
       <Filter>Source Files\shader_handling</Filter>
     </ClCompile>
     <ClCompile Include="src\drawables\skybox.cpp">
-      <Filter>Source Files\skybox</Filter>
+      <Filter>Source Files\drawables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model_handling\model_loader.cpp">
+      <Filter>Source Files\model_handling</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawables\model.cpp">
+      <Filter>Source Files\drawables</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drawables\mesh.cpp">
+      <Filter>Source Files\drawables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -116,12 +119,6 @@
     <ClInclude Include="inc\image_loading\stb_image.h">
       <Filter>Header Files\image_loading</Filter>
     </ClInclude>
-    <ClInclude Include="inc\model_handling\mesh.h">
-      <Filter>Header Files\model_handling</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\model_handling\model.h">
-      <Filter>Header Files\model_handling</Filter>
-    </ClInclude>
     <ClInclude Include="inc\texture_handling\texture_loader.h">
       <Filter>Header Files\texture_handling</Filter>
     </ClInclude>
@@ -138,6 +135,15 @@
       <Filter>Header Files\drawables</Filter>
     </ClInclude>
     <ClInclude Include="inc\drawables\skybox.h">
+      <Filter>Header Files\drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\model_handling\model_loader.h">
+      <Filter>Header Files\model_handling</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\drawables\model.h">
+      <Filter>Header Files\drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\drawables\mesh.h">
       <Filter>Header Files\drawables</Filter>
     </ClInclude>
   </ItemGroup>

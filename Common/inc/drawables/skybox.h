@@ -6,22 +6,25 @@
 #define SKYBOX_H
 
 #include "abstract_drawable.h"
-#include "GL/gl3w.h"
 
+#include "GL/gl3w.h"
 #include <string>
 #include <vector>
 
-class Skybox : public AbstractDrawable
+namespace drawables
 {
-public:
-	Skybox(const std::vector<std::string>& pathsToTextures);
-	virtual ~Skybox();
+	class Skybox : public AbstractDrawable
+	{
+	public:
+		Skybox(const std::vector<std::string>& pathsToTextures);
+		virtual ~Skybox();
 
-	virtual void draw(GLuint shaderProgramId) const;
+		virtual void draw(const GLuint& shaderProgramId) const;
 
-private:
-	GLuint m_cubemapTexture;
-	GLuint m_vao;
-};
+	private:
+		GLuint m_cubemapTexture;
+		GLuint m_vao;
+	};
+}
 
 #endif // !SKYBOX_H

@@ -5,9 +5,9 @@
 #include "cube_showcase.h"
 #include "camera/camera.h"
 #include "window/window.h"
-#include "model_handling/model.h"
 #include "shader_handling/shader_program.h"
 #include "texture_handling/texture_loader.h"
+#include "drawables/model.h"
 #include "drawables/skybox.h"
 
 #include "gl3w/GL/gl3w.h"
@@ -115,7 +115,6 @@ void CubeShowcase::run()
 		lightShaderProgram
 			->setMat4("model_matrix", modelMat)
 			.setVec3("light_color", m_lightColor);
-		lightShaderProgram->use();
 		m_sun->draw(lightShaderProgram->getProgramId());
 		// -- end draw sun
 
@@ -130,7 +129,6 @@ void CubeShowcase::run()
 		lightShaderProgram
 			->setMat4("model_matrix", modelMat)
 			.setVec3("light_color", m_lightColor);
-		lightShaderProgram->use();
 		m_sun->draw(lightShaderProgram->getProgramId());
 		// -- end draw point light
 
@@ -157,8 +155,8 @@ void CubeShowcase::setupWindow()
 
 void CubeShowcase::loadModels()
 {
-	m_cube = std::make_unique<model_handling::Model>("../_Assets/models/cube/cube.obj");
-	m_sun = std::make_unique<model_handling::Model>("../_Assets/models/low_poly_sphere/low_poly_sphere.obj");
+	m_cube = std::make_unique<drawables::Model>("../_Assets/models/cube/cube.obj");
+	m_sun = std::make_unique<drawables::Model>("../_Assets/models/low_poly_sphere/low_poly_sphere.obj");
 
 	std::vector<std::string> skyboxTextures
 	{
@@ -169,7 +167,7 @@ void CubeShowcase::loadModels()
 			"../_Assets/textures/skyboxes/forest/front.jpg",
 			"../_Assets/textures/skyboxes/forest/back.jpg"
 	};
-	m_skybox = std::make_unique<Skybox>(skyboxTextures);
+	m_skybox = std::make_unique<drawables::Skybox>(skyboxTextures);
 }
 
 void CubeShowcase::setupInitialPositions()

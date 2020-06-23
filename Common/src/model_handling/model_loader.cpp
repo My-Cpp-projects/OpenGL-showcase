@@ -2,8 +2,8 @@
 
 
 
-#include "model_handling/mesh.h"
-#include "model_handling/model.h"
+#include "model_handling/model_loader.h"
+#include "drawables/mesh.h"
 #include "texture_handling/texture_loader.h"
 
 #include "gl3w/GL/gl3w.h"
@@ -16,58 +16,50 @@
 
 namespace model_handling
 {
-	Model::Model(const std::string& path)
-	{
-		loadModel(path);
-	}
-
-	void Model::draw(GLuint shaderProgramId) const
-	{
-		for(const auto& mesh : m_meshes)
-			mesh->draw(shaderProgramId);
-	}
-
-	void Model::loadModel(const std::string& path)
+	std::vector<drawables::Mesh_uptr> ModelLoader::loadModel(const std::string& path)
 	{
 		Assimp::Importer importer;
 		const auto scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+
+		std::vector<std::unique_ptr<drawables::Mesh>> retVal;
 		if(not scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || not scene->mRootNode)
 		{
 			std::cerr << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
-			return;
+			return retVal;
 		}
 
 		// retrieve the directory path of the filepath
 		m_directory = path.substr(0, path.find_last_of('/'));
-
-		processNode(scene->mRootNode, scene);
+	
+		processNode(scene->mRootNode, scene, retVal);
+		return retVal;
 	}
 
-	void Model::processNode(aiNode* node, const aiScene* scene)
+	void ModelLoader::processNode(aiNode* node, const aiScene* scene, std::vector<drawables::Mesh_uptr>& output)
 	{
 		// process each mesh located at the current node
 		for(unsigned int i = 0; i < node->mNumMeshes; ++i)
 		{
 			auto mesh = scene->mMeshes[node->mMeshes[i]];
-			m_meshes.emplace_back(processMesh(mesh, scene));
+			output.emplace_back(processMesh(mesh, scene));
 		}
 		// recursively process each of the children nodes
 		for(unsigned int i = 0; i < node->mNumChildren; ++i)
 		{
-			processNode(node->mChildren[i], scene);
+			processNode(node->mChildren[i], scene, output);
 		}
 	}
 
-	std::unique_ptr<Mesh> Model::processMesh(aiMesh* mesh, const aiScene* scene)
+	drawables::Mesh_uptr ModelLoader::processMesh(aiMesh* mesh, const aiScene* scene)
 	{
-		std::vector<Vertex> vertices;
+		std::vector<drawables::Vertex> vertices;
 		std::vector<unsigned int> indices;
-		std::vector<Texture> textures;
+		std::vector<drawables::Texture> textures;
 
 		// walk through each of the mesh's vertices
 		for(unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
-			Vertex vertex;
+			drawables::Vertex vertex;
 			glm::vec3 tmp_vector;
 			// positions
 			tmp_vector.x = mesh->mVertices[i].x;
@@ -120,25 +112,25 @@ namespace model_handling
 		// normal: texture_normalN
 
 		// 1. diffuse maps
-		std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		std::vector<drawables::Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 		// 2. specular maps
-		std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+		std::vector<drawables::Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		// 3. normal maps
-		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+		std::vector<drawables::Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 		// 4. height maps
-		std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+		std::vector<drawables::Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 		// return a mesh object created from the extracted mesh data
-		return std::make_unique<Mesh>(vertices, indices, textures);
+		return std::make_unique<drawables::Mesh>(vertices, indices, textures);
 	}
 
-	std::vector<Texture> Model::loadMaterialTextures(const aiMaterial const* mat, aiTextureType type, std::string typeName)
+	std::vector<drawables::Texture> ModelLoader::loadMaterialTextures(const aiMaterial const* mat, aiTextureType type, std::string typeName)
 	{
-		std::vector<Texture> textures;
+		std::vector<drawables::Texture> textures;
 		for(unsigned int i = 0; i < mat->GetTextureCount(type); ++i)
 		{
 			aiString str;
@@ -157,7 +149,7 @@ namespace model_handling
 
 			if(not skip)
 			{   // if texture hasn't been loaded already, load it
-				Texture texture;
+				drawables::Texture texture;
 
 				texture.m_id = texture_loader::getTextureFromFile(str.C_Str(), this->m_directory);
 				texture.m_type = typeName;
