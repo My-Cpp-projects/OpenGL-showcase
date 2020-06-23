@@ -103,7 +103,6 @@ void CubeShowcase::run()
 			modelMat = glm::mat4(1.0f);
 			modelMat = glm::translate(modelMat, pos);
 			cubeShaderProgram->setMat4("model_matrix", modelMat);
-			cubeShaderProgram->use();
 			m_cube->draw(cubeShaderProgram->getProgramId());
 		}
 		// -- end draw cube
